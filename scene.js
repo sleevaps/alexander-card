@@ -1,10 +1,9 @@
 import {
-  ACESFilmicToneMapping, AmbientLight, BoxGeometry, BufferGeometry, DirectionalLight,
-  Group, HemisphereLight, Line, LineBasicMaterial, MathUtils, Mesh, MeshBasicMaterial,
-  PerspectiveCamera, Scene, SRGBColorSpace, Vector3, WebGLRenderer
+  ACESFilmicToneMapping, AmbientLight, BoxGeometry, CylinderGeometry, DirectionalLight,
+  Group, HemisphereLight, MathUtils, Mesh, MeshBasicMaterial, MeshStandardMaterial,
+  PerspectiveCamera, Scene, SRGBColorSpace, TorusGeometry, Vector3, WebGLRenderer
 } from 'three';
 import { createWalker } from './walker.js';
-import { createLamp } from './lamp.js';
 import { createShadow, createTrack, tileLength } from './track.js';
 
 const journey = document.querySelector('.journey');
@@ -41,11 +40,10 @@ async function start() {
   const track = createTrack(scene);
   const shadow = createShadow(scene);
   const skyline = createSkyline(scene);
-  const coverLamp = createLamp();
-  scene.add(coverLamp.head);
-  const rays = createRays(scene);
+  const stand = createStand(scene);
   const introPosition = new Vector3();
   const bodyPosition = new Vector3();
+  const up = new Vector3(0, 1, 0);
 
   let mobile = false;
   let near = true;
@@ -69,32 +67,30 @@ async function start() {
     const amount = between(distance, 0, .85);
     const tileIndex = Math.floor(distance / tileLength);
     const x = pathStart + distance - tileIndex * tileLength;
-    const hip = walker.pose({ distance, amount, unfolding: unfold });
+    const size = lerp(mobile ? .91 : 1.49, 1, unfold);
+    const wave = (1 - unfold) * between(elapsed, .2, .85) * (1 - between(elapsed, 3.2, 4.1));
+    const hip = walker.pose({ distance, amount, size, greet: wave, time: elapsed });
+    const stillX = mobile ? .06 : 2.53;
+    const base = mobile ? 1.38 : -.11;
+    const breathing = (1 - unfold) * .017 * Math.sin(elapsed * 1.85);
+    introPosition.set(stillX, base, -.55);
+    bodyPosition.set(x, 0, 0);
+    walker.root.position.copy(introPosition).lerp(bodyPosition, unfold);
+    const turn = lerp(-1.14 + Math.sin(elapsed * .77) * .14, 0, unfold);
+    walker.root.rotation.y = turn;
+    walker.head.position.set(.05, hip + 1.068 + breathing, .035)
+      .multiplyScalar(size).applyAxisAngle(up, turn).add(walker.root.position);
+    walker.head.scale.setScalar(size);
+    walker.head.rotation.set(
+      lerp(.02, -.035, unfold),
+      lerp(-.25 + Math.sin(elapsed * .91) * .20, .32 + Math.sin(distance * .83) * .25, unfold),
+      lerp(-.04 + Math.sin(elapsed * 1.35) * .032, -.045 + Math.sin(distance * 7.6) * .042 * amount, unfold)
+    );
 
-    const restingYaw = .28 + Math.sin(elapsed * .63) * .48;
-    const arrivalYaw = restingYaw - unfold * 6.05;
-    const yaw = lerp(arrivalYaw, .39, unfold);
-    const stillX = mobile ? 0 : 2.42;
-    const stillY = mobile ? 2.78 : 2.16;
-    introPosition.set(stillX, stillY + .14 * Math.sin(elapsed * 1.15), -1.30);
-    bodyPosition.set(x + .05, (hip + 1.045) * unfold, .035);
-    const lampScale = lerp(mobile ? 2.25 : 2.72, 1, unfold);
-    const shrink = between(unfold, .48, .69);
-    const grow = between(unfold, .57, .88);
-    const faceHeight = lampScale * (1 - shrink) + grow;
-    walker.head.position.copy(introPosition).lerp(bodyPosition, unfold);
-    walker.head.scale.setScalar(Math.max(.001, grow));
-    walker.head.visible = grow > .01;
-    coverLamp.head.position.copy(walker.head.position);
-    coverLamp.head.scale.setScalar(Math.max(.001, lampScale * (1 - shrink)));
-    coverLamp.head.visible = shrink < .995;
-    coverLamp.setPower(.36 + .64 * (motionEnabled() ? between(elapsed, 0, 1.15) : 1));
-    walker.root.position.copy(walker.head.position);
-    walker.root.position.x -= .05 * unfold;
-    walker.root.position.y -= (hip + 1.045) * unfold + .47 * (faceHeight - unfold);
-    walker.root.position.z -= .035 * unfold;
-    coverLamp.head.rotation.set(.08 + Math.sin(elapsed * .82) * .12, yaw - .39, -.13);
-    walker.head.rotation.set(-.035, .32 + Math.sin(distance * .83) * .25, -.045 + Math.sin(distance * 7.6) * .042 * amount);
+    stand.visible = unfold < .87;
+    stand.position.copy(introPosition);
+    stand.position.y -= .14 * size + unfold * .82;
+    stand.scale.setScalar(size * (1 - unfold));
 
     track.update(tileIndex);
     track.group.position.y = lerp(-4.3, 0, unfold);
@@ -106,15 +102,9 @@ async function start() {
     skyline.position.set(x - (distance % 2.5), 0, -5.7);
     skyline.visible = unfold > .27;
     skyline.scale.y = lerp(.34, 1, unfold);
-    rays.position.copy(introPosition);
-    rays.rotation.set(.07 + Math.sin(elapsed * .5) * .10, .18, elapsed * -.035);
-    rays.visible = unfold < .68;
-    rays.scale.setScalar(1 - unfold * .44);
-    rays.children.forEach(line => { line.material.opacity = (1 - between(unfold, .1, .67)) * .57; });
-
     const viewX = lerp(mobile ? 0 : .1, x + (mobile ? .08 : .8), unfold);
-    const viewY = lerp(mobile ? 1.01 : 2.08, .96, unfold);
-    const viewDepth = lerp(mobile ? 8.55 : 7.45, mobile ? 8.55 : 6.95, unfold);
+    const viewY = lerp(mobile ? 1.01 : 1.94, .96, unfold);
+    const viewDepth = lerp(mobile ? 8.55 : 7.75, mobile ? 8.55 : 6.95, unfold);
     camera.position.set(viewX + unfold * (mobile ? .82 : 2.75), lerp(mobile ? 1.19 : 2.45, 3.36, unfold), viewDepth);
     camera.lookAt(viewX, viewY, 0);
     renderer.render(scene, camera);
@@ -217,23 +207,26 @@ async function start() {
   setMode();
 }
 
-function createRays(scene) {
-  const rays = new Group();
-  for (const [radius, shift] of [[1.9, -.32], [2.16, .12]]) {
-    const points = [];
-    for (let i = 0; i <= 86; i++) {
-      const angle = (i / 86) * Math.PI * 1.65 + shift;
-      points.push(new Vector3(Math.cos(angle) * radius, Math.sin(angle) * radius * .46, -.15 + Math.sin(angle) * .65));
-    }
-    const ring = new Line(
-      new BufferGeometry().setFromPoints(points),
-      new LineBasicMaterial({ color: 0xe6bd6b, transparent: true, opacity: .57 })
-    );
-    ring.rotation.z = -.39 + shift;
-    rays.add(ring);
-  }
-  scene.add(rays);
-  return rays;
+function createStand(scene) {
+  const stand = new Group();
+  const base = new Mesh(
+    new CylinderGeometry(.93, 1.01, .16, 64),
+    new MeshStandardMaterial({ color: 0x303a63, roughness: .47, metalness: .35 })
+  );
+  const deck = new Mesh(
+    new CylinderGeometry(.892, .918, .046, 64),
+    new MeshStandardMaterial({ color: 0x4d5676, roughness: .64, metalness: .19 })
+  );
+  deck.position.y = .099;
+  const ring = new Mesh(
+    new TorusGeometry(.925, .012, 8, 64),
+    new MeshBasicMaterial({ color: 0xf6b97d, toneMapped: false })
+  );
+  ring.rotation.x = -Math.PI / 2;
+  ring.position.y = .023;
+  stand.add(base, deck, ring);
+  scene.add(stand);
+  return stand;
 }
 
 function createSkyline(scene) {

@@ -11,11 +11,13 @@ export function createPortraitHead(image) {
     const x = positions.getX(i);
     const y = positions.getY(i);
     const z = positions.getZ(i);
-    const jaw = lerp(.80, 1, smoothstep(y, -.82, -.13));
+    const jaw = lerp(.86, 1, smoothstep(y, -.90, -.10));
     const front = smoothstep(z, .14, .95);
-    const nose = Math.exp(-((x / .19) ** 2 + ((y + .08) / .28) ** 2)) * front;
+    const nose = Math.exp(-((x / .17) ** 2 + ((y + .23) / .29) ** 2)) * front;
     const chin = Math.exp(-((x / .63) ** 2 + ((y + .65) / .25) ** 2)) * front;
-    positions.setXYZ(i, x * .365 * jaw, y * .49, z * .31 + nose * .065 + chin * .026);
+    const crown = smoothstep(y, .33, .98);
+    const sweep = Math.sin(x * 6 + z * 3) * .017 * crown;
+    positions.setXYZ(i, x * .295 * jaw + crown * .017, y * .408 + sweep, z * .277 + nose * .074 + chin * .026);
   }
   geometry.computeVertexNormals();
 
@@ -27,11 +29,11 @@ export function createPortraitHead(image) {
   });
   head.add(new Mesh(geometry, face));
 
-  const skin = new MeshStandardMaterial({ color: 0xb0745f, roughness: .82 });
+  const skin = new MeshStandardMaterial({ color: 0xc68e72, roughness: .82 });
   for (const side of [-1, 1]) {
     const ear = new Mesh(new SphereGeometry(1, 20, 14), skin);
-    ear.position.set(side * .339, -.069, .025);
-    ear.scale.set(.057, .116, .067);
+    ear.position.set(side * .273, -.071, .026);
+    ear.scale.set(.046, .087, .053);
     head.add(ear);
   }
   return head;
@@ -42,7 +44,7 @@ function bakePortrait(image) {
   const source = document.createElement('canvas');
   source.width = source.height = size;
   const sample = source.getContext('2d', { willReadFrequently: true });
-  sample.drawImage(image, 145, 45, 349, 496, 0, 0, size, size);
+  sample.drawImage(image, 0, 0, size, size);
   const photo = sample.getImageData(0, 0, size, size).data;
   const atlas = document.createElement('canvas');
   atlas.width = atlas.height = size;
@@ -59,15 +61,16 @@ function bakePortrait(image) {
       const horizontal = -Math.cos(turn) * contour;
       const front = Math.sin(turn);
       const sourceX = Math.min(size - 1, Math.max(0, Math.round((.5 + horizontal * .48) * size)));
-      const amount = smoothstep(front, .09, .80) * smoothstep(height, -.99, -.83);
-      const hairLine = front < 0 ? -.21 : .50 - Math.abs(horizontal) * .22;
-      const hair = smoothstep(height, hairLine - .09, hairLine + .12);
-      const highlights = Math.sin(turn * 28 + height * 13) * hair * 6;
       const pixel = (row * size + col) * 4;
       const from = (sourceY * size + sourceX) * 4;
-      bitmap.data[pixel] = lerp(lerp(182, 129, hair) + highlights, photo[from], amount);
-      bitmap.data[pixel + 1] = lerp(lerp(124, 94, hair) + highlights, photo[from + 1], amount);
-      bitmap.data[pixel + 2] = lerp(lerp(101, 58, hair) + highlights, photo[from + 2], amount);
+      const saturation = smoothstep(photo[from] - photo[from + 2], 22, 41);
+      const amount = smoothstep(front, .20, .80) * smoothstep(height, -.995, -.83) * saturation;
+      const hairLine = front < 0 ? -.13 : .49 - Math.abs(horizontal) * .32;
+      const hair = smoothstep(height, hairLine - .06, hairLine + .105);
+      const strands = Math.sin(turn * 38 + height * 17) * hair * 3.5;
+      bitmap.data[pixel] = lerp(lerp(205, 106, hair) + strands, photo[from], amount);
+      bitmap.data[pixel + 1] = lerp(lerp(150, 72, hair) + strands, photo[from + 1], amount);
+      bitmap.data[pixel + 2] = lerp(lerp(119, 46, hair) + strands, photo[from + 2], amount);
       bitmap.data[pixel + 3] = 255;
     }
   }

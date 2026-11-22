@@ -4,94 +4,204 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Александр, с днём рождения!</title>
+<meta name="description" content="Открытка для Александра.">
 <meta property="og:title" content="Александр, с днём рождения!">
 <meta property="og:image" content="https://sleevaps.github.io/alexander-card/alexander-photo.png">
+<meta name="theme-color" content="#161714">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;800&family=Unbounded:wght@500;700&display=swap">
 <style>
   :root {
-    --ink: #252a36;
-    --blue: #344d79;
-    --paper: #fffdfa;
-    --line: #dedfe4;
+    color-scheme: dark;
+    --ink: #f5f4e8;
+    --muted: #d0d1bf;
+    --accent: #deeb9a;
+    --background: #161714;
+    --line: #414438;
+    --display: Unbounded, system-ui, sans-serif;
+    --body: Manrope, system-ui, sans-serif;
   }
   * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
   body {
     margin: 0;
-    padding: clamp(18px, 5vw, 52px) 16px;
+    background: var(--background);
     color: var(--ink);
-    background: #f0eeea;
-    font: 1rem/1.6 system-ui, sans-serif;
+    font: 500 1rem/1.65 var(--body);
   }
-  .card {
-    max-width: 760px;
-    margin-inline: auto;
-    padding: clamp(19px, 4.4vw, 44px);
-    border: 1px solid var(--line);
-    border-top: 4px solid var(--blue);
-    border-radius: 8px;
-    background: var(--paper);
+  h1, h2, p, figure { margin: 0; }
+  .frame { width: min(1180px, calc(100% - 2 * clamp(20px, 6vw, 72px))); margin-inline: auto; }
+  .cover {
+    overflow: clip;
+    background:
+      radial-gradient(ellipse at 83% 49%, #3d442e, transparent 55%),
+      var(--background);
   }
-  h1 {
-    margin: 0 0 22px;
-    color: var(--blue);
-    font-size: clamp(1.85rem, 5vw, 2.9rem);
-    line-height: 1.12;
-    letter-spacing: -.04em;
-  }
-  .greeting {
+  .stage {
     display: grid;
-    grid-template-columns: minmax(0, .9fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, .92fr);
     align-items: center;
-    gap: clamp(20px, 4vw, 36px);
+    min-height: min(770px, 94svh);
+    padding-block: clamp(62px, 11svh, 132px);
+    perspective: 1050px;
+    transform-style: preserve-3d;
   }
-  img { display: block; width: 100%; height: auto; border-radius: 4px; }
-  .note p { margin: 0; }
-  .note p + p { margin-top: .8em; }
-  main { margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--line); }
-  h2 { margin: 0 0 8px; color: var(--blue); font-size: 1.2rem; }
-  .stream { display: flex; flex-wrap: wrap; gap: .15em .37em; }
-  .it { max-width: 100%; overflow-wrap: anywhere; }
-  .cm { color: #686d77; }
-  button {
-    margin-top: 18px;
-    min-height: 44px;
-    padding: 7px 13px;
-    border: 1px solid #bcc7dc;
-    border-radius: 5px;
-    background: #edf1f7;
-    color: var(--blue);
-    font: inherit;
+  .copy { position: relative; z-index: 1; }
+  .copy-inner { animation: copy-in .75s .12s both cubic-bezier(.22, 1, .36, 1); }
+  h1 {
+    font: 700 clamp(2.2rem, 5.25vw, 5rem)/1.08 var(--display);
+    letter-spacing: -.073em;
+  }
+  .name { display: block; color: var(--accent); margin-bottom: .12em; }
+  .note { margin-block: 1.4rem 1.75rem; max-width: 34ch; color: var(--muted); font-size: clamp(1rem, 1.55vw, 1.2rem); }
+  .action {
+    display: inline-flex;
+    align-items: center;
+    gap: .65em;
+    min-height: 46px;
+    padding: 9px 15px;
+    border: 1px solid currentColor;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--accent);
+    font: 800 .95rem/1.25 var(--body);
+    text-decoration: none;
     cursor: pointer;
+    transition: color .2s, background-color .2s, transform .2s;
   }
-  button:hover { background: #dfe7f3; }
-  :focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
-  @media (max-width: 550px) {
-    .greeting { grid-template-columns: minmax(0, 1fr); }
-    .greeting img { max-width: 360px; }
+  .action:hover { color: var(--background); background: var(--accent); }
+  .action:active { transform: translateY(2px); }
+  :focus-visible { outline: 2px solid var(--ink); outline-offset: 6px; }
+
+  .art { position: relative; isolation: isolate; perspective: 900px; }
+  .orbit {
+    position: absolute;
+    z-index: -1;
+    inset: -15% -9%;
+    border: 1px solid #deeb9a4a;
+    border-radius: 50%;
+    transform: rotate(-37deg) scaleY(.48);
+  }
+  .orbit::after {
+    position: absolute;
+    inset: -15%;
+    border: 1px solid #deeb9a27;
+    border-radius: inherit;
+    content: "";
+  }
+  .photo-group {
+    position: relative;
+    width: min(100%, 465px);
+    margin-inline: auto;
+    transform-style: preserve-3d;
+    transform: rotateX(var(--pitch, 4deg)) rotateY(var(--yaw, -8deg)) rotateZ(5deg);
+    transition: transform .38s cubic-bezier(.2, .7, .25, 1);
+  }
+  .photo-group::before {
+    position: absolute;
+    inset: 1% -5% -6% 5%;
+    border: 1px solid #deeb9a68;
+    background: #adb98118;
+    transform: translateZ(-32px) rotate(-9deg);
+    content: "";
+  }
+  .photo {
+    padding: 8px;
+    border: 1px solid #e2e5ce4f;
+    background: #292d24;
+    box-shadow: 0 28px 64px #0c0f09ad;
+    animation: photo-in 1.05s both cubic-bezier(.2, .8, .25, 1);
+  }
+  .photo img { display: block; width: 100%; height: auto; }
+
+  .wishes { border-top: 1px solid var(--line); padding-block: clamp(36px, 7vw, 90px); }
+  .wishes h2 { margin-bottom: 1.1em; font: 500 clamp(1.25rem, 3vw, 2.25rem)/1.25 var(--display); letter-spacing: -.045em; }
+  .stream { display: flex; flex-wrap: wrap; align-items: baseline; gap: .15em .45em; font-size: clamp(1.05rem, 2vw, 1.75rem); }
+  .it { max-width: 100%; overflow-wrap: anywhere; }
+  .wb, .wf { color: var(--accent); }
+  .wd, .we { font-weight: 800; }
+  .cm { color: #a3a897; }
+  .more { margin-top: 26px; }
+  .more[hidden] { display: none; }
+
+  @keyframes copy-in {
+    from { opacity: 0; transform: translateY(22px); }
+  }
+  @keyframes photo-in {
+    from { opacity: 0; transform: translate3d(0, 42px, -100px) rotateY(20deg) scale(.9); }
+  }
+  @media (max-width: 740px) {
+    .stage { grid-template-columns: minmax(0, 1fr); min-height: 0; gap: 44px; padding-block: 44px 62px; }
+    h1 { font-size: clamp(1.9rem, 7.8vw, 3.7rem); }
+    .art { grid-row: 1; width: min(80%, 360px); justify-self: center; }
+    .photo-group { transform: rotateZ(4deg); }
+    .note { margin-block: 1rem 1.25rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .copy-inner, .photo, .photo-group, .action { animation: none; transition: none; }
+    .photo-group, .action:active { transform: none; }
   }
 </style>
 </head>
 <body>
-<div class="card">
-<header>
-  <h1>Александр, с днём рождения!</h1>
-  <div class="greeting">
-    <img src="alexander-photo.png" width="640" height="640" alt="Александр во дворе, фото со вспышкой">
-    <div class="note">
-      <p>Эту фотку я всё-таки поставил :)</p>
-      <p>Желаю, чтобы всё, что ты задумал, получилось. И чтобы почаще удавалось собраться со своими.</p>
+<header class="cover">
+  <div class="frame stage">
+    <div class="copy">
+      <div class="copy-inner">
+        <h1><span class="name">Александр,</span> с днём<br>рождения!</h1>
+        <p class="note">Желаю, чтобы всё, что ты задумал, получилось. И чтобы почаще удавалось собраться со своими.</p>
+        <a class="action" href="#wishes">К пожеланиям <span aria-hidden="true">↓</span></a>
+      </div>
+    </div>
+    <div class="art">
+      <div class="orbit" aria-hidden="true"></div>
+      <div class="photo-group">
+        <figure class="photo">
+          <img src="alexander-photo.png" width="640" height="640" alt="Александр во дворе, фото со вспышкой" fetchpriority="high">
+        </figure>
+      </div>
     </div>
   </div>
 </header>
-<main>
-  <h2>Ну и ещё желаю</h2>
-  <div id="stream" class="stream">
-    <span id="dots" aria-hidden="true">…</span>
-    <noscript>Здоровья, удачи и побольше поводов для радости!</noscript>
+<main class="wishes" id="wishes">
+  <div class="frame">
+    <h2>Ну и ещё желаю</h2>
+    <div id="stream" class="stream">
+      <span id="dots" aria-hidden="true">…</span>
+      <noscript>Здоровья, удачи и побольше поводов для радости!</noscript>
+    </div>
+    <button class="action more" id="more" type="button" hidden>Ещё пожеланий <span aria-hidden="true">+</span></button>
+    <div id="sentinel"></div>
   </div>
-  <button id="more" type="button" hidden>Ещё пожеланий</button>
-  <div id="sentinel"></div>
 </main>
-</div>
+<script>
+  const stage = document.querySelector('.stage');
+  const photoGroup = document.querySelector('.photo-group');
+  const tiltEnabled = matchMedia('(min-width: 741px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)');
+  let stageRect = null;
+
+  stage.addEventListener('pointermove', event => {
+    if (!tiltEnabled.matches || event.pointerType === 'touch') return;
+    stageRect ??= stage.getBoundingClientRect();
+    const x = (event.clientX - stageRect.left) / stageRect.width - .5;
+    const y = (event.clientY - stageRect.top) / stageRect.height - .5;
+    photoGroup.style.setProperty('--pitch', (4 - y * 20) + 'deg');
+    photoGroup.style.setProperty('--yaw', (-8 + x * 28) + 'deg');
+  });
+
+  function resetTilt() {
+    stageRect = null;
+    photoGroup.style.removeProperty('--pitch');
+    photoGroup.style.removeProperty('--yaw');
+  }
+
+  stage.addEventListener('pointerleave', resetTilt);
+  window.addEventListener('scroll', resetTilt, { passive: true });
+  window.addEventListener('resize', resetTilt);
+  tiltEnabled.addEventListener('change', resetTilt);
+</script>
 <script>
 
 class DCLogic { constructor(){ this.props = {}; } setState(s){ Object.assign(this.state, s); paint(); } }

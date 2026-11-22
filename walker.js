@@ -1,8 +1,10 @@
 import {
-  Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, PlaneGeometry, SRGBColorSpace,
+  Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, PlaneGeometry, SRGBColorSpace, TorusGeometry,
   TextureLoader, Vector3
 } from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+
+import { createPortraitHead } from './head.js';
 
 const up = new Vector3(0, 1, 0);
 const axis = new Vector3();
@@ -16,26 +18,30 @@ export async function createWalker(scene) {
     loader.loadAsync('alexander-night.png')
   ]);
   const ivory = material(0xffedbb, .42);
-  const jacket = material(0xf2c85e, .48);
+  const jacket = material(0x4c5e83, .64);
+  const seams = material(0x334661, .68);
   const cuffs = material(0xf78354, .56);
-  const pants = material(0x4b67c6, .66);
+  const pants = material(0x393a59, .74);
   const soles = material(0x1c2750, .62);
   const root = new Group();
-  const head = new Group();
+  const postcard = new Group();
+  const head = createPortraitHead(front.image);
 
-  head.add(box(1, 1.08, .075, .04, ivory));
+  postcard.add(box(1, 1.08, .075, .04, ivory));
   for (const [texture, side] of [[front, 1], [back, -1]]) {
     texture.colorSpace = SRGBColorSpace;
     const photo = new Mesh(new PlaneGeometry(.91, .91), new MeshBasicMaterial({ map: texture, toneMapped: false }));
     photo.position.set(0, .033, side * .039);
     if (side < 0) photo.rotation.y = Math.PI;
-    head.add(photo);
+    postcard.add(photo);
   }
 
   const coat = box(.43, .66, .60, .15, jacket);
   const waist = box(.38, .22, .51, .081, pants);
-  const zipper = box(.055, .54, .04, .02, cuffs);
-  root.add(coat, waist, zipper);
+  const seam = box(.035, .43, .022, .008, seams);
+  const hood = new Mesh(new TorusGeometry(.208, .060, 12, 36, Math.PI * 1.77), seams);
+  hood.rotation.set(Math.PI / 2, 0, -.22);
+  root.add(coat, waist, seam, hood);
 
   function makeLimb(side) {
     const thigh = box(.215, 1, .205, .087, pants);
@@ -49,7 +55,7 @@ export async function createWalker(scene) {
     return { side, thigh, shin, boot, sole, upperArm, sleeve, glove };
   }
   const limbs = [makeLimb(-1), makeLimb(1)];
-  scene.add(root, head);
+  scene.add(root, head, postcard);
 
   function pose({ distance, amount, unfolding }) {
     const gait = distance / stride;
@@ -59,8 +65,9 @@ export async function createWalker(scene) {
     coat.position.set(.053, hipHeight + .35, 0);
     coat.rotation.z = -.09 * amount;
     waist.position.set(0, hipHeight - .03, 0);
-    zipper.position.set(.075, hipHeight + .34, .30);
-    zipper.rotation.z = coat.rotation.z;
+    seam.position.set(.075, hipHeight + .34, .30);
+    seam.rotation.z = coat.rotation.z;
+    hood.position.set(-.015, hipHeight + .646, 0);
 
     for (const limb of limbs) {
       const { side } = limb;
@@ -94,7 +101,7 @@ export async function createWalker(scene) {
     return hipHeight;
   }
 
-  return { root, head, pose };
+  return { root, head, postcard, pose };
 }
 
 function material(color, roughness) {

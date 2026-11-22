@@ -1,41 +1,66 @@
 import {
-  BoxGeometry, CanvasTexture, Color, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial,
+  BoxGeometry, CanvasTexture, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial,
   PlaneGeometry, SRGBColorSpace
 } from 'three';
+import { wishAt } from './wishes.js';
 
-const stops = [
-  { x: -4.9, text: 'УДАЧИ', color: '#ffcf64', ink: '#251c31' },
-  { x: -.95, text: 'СИЛ', color: '#99aaff', ink: '#151b38' },
-  { x: 3, text: 'СВОИХ РЯДОМ', color: '#ff9575', ink: '#261930' },
-  { x: 6.95, text: 'СВОБОДЫ', color: '#ded7ff', ink: '#232340' }
-];
+export const tileLength = 3.95;
+const firstTile = -4.9;
+const tileCount = 11;
+const colors = ['#ffcf64', '#99aaff', '#ff9575', '#ded7ff'];
 
 export function createTrack(scene) {
-  const track = new Group();
+  const group = new Group();
   const deck = new MeshStandardMaterial({ color: 0x27345e, roughness: .61, metalness: .25 });
   const side = new MeshStandardMaterial({ color: 0x1c2449, roughness: .63, metalness: .32 });
   const ballast = new MeshStandardMaterial({ color: 0x12192f, roughness: .82 });
-  const base = new Mesh(new BoxGeometry(18.5, .38, 2.1), ballast);
-  base.position.set(1, -.95, -.12);
-  track.add(base);
+  const width = tileLength - .03;
+  const body = new BoxGeometry(width, .75, 2.28);
+  const base = new BoxGeometry(tileLength, .20, 2.33);
+  const face = new PlaneGeometry(width - .10, .67);
+  const stripeGeometry = new BoxGeometry(width - .08, .012, .035);
+  const tiles = [];
 
-  for (const stop of stops) {
-    const width = 3.92;
-    const platform = new Mesh(new BoxGeometry(width, .75, 2.28), [side, side, deck, side, side, side]);
-    platform.position.set(stop.x, -.375, 0);
-    track.add(platform);
-    const face = new Mesh(
-      new PlaneGeometry(width - .10, .67),
-      new MeshBasicMaterial({ map: makeWord(stop), toneMapped: false })
-    );
-    face.position.set(stop.x, -.385, 1.146);
-    track.add(face);
-    const stripe = new Mesh(new BoxGeometry(width - .08, .012, .035), new MeshBasicMaterial({ color: new Color(stop.color), toneMapped: false }));
-    stripe.position.set(stop.x, .007, 1);
-    track.add(stripe);
+  for (let i = 0; i < tileCount; i++) {
+    const block = new Group();
+    const platform = new Mesh(body, [side, side, deck, side, side, side]);
+    platform.position.y = -.375;
+    const footing = new Mesh(base, ballast);
+    footing.position.y = -.84;
+    const panel = document.createElement('canvas');
+    panel.width = 768;
+    panel.height = 146;
+    const texture = new CanvasTexture(panel);
+    texture.colorSpace = SRGBColorSpace;
+    texture.anisotropy = 4;
+    const print = new Mesh(face, new MeshBasicMaterial({ map: texture, toneMapped: false }));
+    print.position.set(0, -.385, 1.146);
+    const stripe = new Mesh(stripeGeometry, new MeshBasicMaterial({ toneMapped: false }));
+    stripe.position.set(0, .007, 1);
+    block.add(platform, footing, print, stripe);
+    group.add(block);
+    tiles.push({ block, texture, stripe, index: -1 });
   }
-  scene.add(track);
-  return track;
+  scene.add(group);
+
+  let origin = -1;
+  function update(index) {
+    if (index === origin) return;
+    origin = index;
+    const first = Math.max(0, index - 5);
+    for (let i = first; i < first + tileCount; i++) {
+      const tile = tiles[i % tileCount];
+      tile.block.position.x = firstTile + (i - origin) * tileLength;
+      if (tile.index === i) continue;
+      const color = colors[i % colors.length];
+      paintWord(tile.texture.image, wishAt(i).toUpperCase(), color);
+      tile.texture.needsUpdate = true;
+      tile.stripe.material.color.set(color);
+      tile.index = i;
+    }
+  }
+  update(0);
+  return { group, update };
 }
 
 export function createShadow(scene) {
@@ -58,22 +83,24 @@ export function createShadow(scene) {
   return shadow;
 }
 
-function makeWord({ text, color, ink }) {
-  const canvas = document.createElement('canvas');
-  canvas.width = 1024;
-  canvas.height = 176;
+function paintWord(canvas, text, color) {
   const ctx = canvas.getContext('2d');
+  const { width, height } = canvas;
   ctx.fillStyle = color;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = ink;
-  ctx.fillRect(0, 0, canvas.width, 4);
-  ctx.fillRect(0, canvas.height - 4, canvas.width, 4);
-  ctx.font = '900 139px "Golos Text", Arial, sans-serif';
+  ctx.fillRect(0, 0, width, height);
+  ctx.fillStyle = '#201f35';
+  ctx.fillRect(0, 0, width, 4);
+  ctx.fillRect(0, height - 4, width, 4);
   ctx.textBaseline = 'middle';
   ctx.textAlign = 'center';
-  ctx.fillText(text, 512, 96, 936);
-  const texture = new CanvasTexture(canvas);
-  texture.colorSpace = SRGBColorSpace;
-  texture.anisotropy = 4;
-  return texture;
+  ctx.font = '900 111px "Golos Text", Arial, sans-serif';
+  const words = text.split(' ');
+  if (words.length > 1 && ctx.measureText(text).width > width * 1.36) {
+    const cut = Math.ceil(words.length / 2);
+    ctx.font = '900 63px "Golos Text", Arial, sans-serif';
+    ctx.fillText(words.slice(0, cut).join(' '), width / 2, 42, width - 38);
+    ctx.fillText(words.slice(cut).join(' '), width / 2, 105, width - 38);
+  } else {
+    ctx.fillText(text, width / 2, 79, width - 38);
+  }
 }

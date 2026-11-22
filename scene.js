@@ -4,19 +4,17 @@ import {
   PerspectiveCamera, Scene, SRGBColorSpace, Vector3, WebGLRenderer
 } from 'three';
 import { createWalker } from './walker.js';
-import { createShadow, createTrack } from './track.js';
-import './wishes.js';
+import { createShadow, createTrack, tileLength } from './track.js';
 
 const journey = document.querySelector('.journey');
 const stage = journey.querySelector('.stage');
 const host = stage.querySelector('.render');
 const opening = stage.querySelector('.opening');
-const route = stage.querySelector('.route span');
 const preference = matchMedia('(prefers-reduced-motion: reduce)');
 const lerp = MathUtils.lerp;
 const between = (value, start, end) => MathUtils.smoothstep(value, start, end);
 const pathStart = -5.75;
-const pathLength = 12.75;
+const unitsPerScreen = 7.65;
 
 async function start() {
   if (!window.WebGL2RenderingContext) return;
@@ -53,18 +51,21 @@ async function start() {
   let optedIn = false;
   const motionEnabled = () => optedIn || !preference.matches;
   let lastProgress = -1;
-  let lastChapter = '';
+  let scrollOrigin = 0;
+  let screens = 4.5;
   let entered = performance.now();
 
   function draw(now) {
-    const travel = Math.max(1, journey.offsetHeight - stage.offsetHeight);
-    const progress = !motionEnabled() ? 0 : MathUtils.clamp(-journey.getBoundingClientRect().top / travel, 0, 1);
-    const elapsed = !motionEnabled() ? 0 : (now - entered) / 1000;
+    const viewport = Math.max(1, stage.offsetHeight);
+    const offset = Math.max(0, -journey.getBoundingClientRect().top);
+    const localScreens = offset / viewport;
+    const progress = motionEnabled() ? (scrollOrigin + localScreens) / 2.45 : 0;
+    const elapsed = motionEnabled() ? (now - entered) / 1000 : 0;
     const unfold = between(progress, .045, .30);
-    const walk = MathUtils.clamp((progress - .245) / .68, 0, 1);
-    const amount = between(walk, 0, .09) * (1 - between(walk, .90, 1));
-    const x = pathStart + pathLength * walk;
-    const distance = x - pathStart;
+    const distance = Math.max(0, progress - .245) * 2.45 * unitsPerScreen;
+    const amount = between(distance, 0, .85);
+    const tileIndex = Math.floor(distance / tileLength);
+    const x = pathStart + distance - tileIndex * tileLength;
     const hip = walker.pose({ distance, amount, unfolding: unfold });
 
     const restingYaw = .28 + Math.sin(elapsed * .63) * .48;
@@ -74,26 +75,31 @@ async function start() {
     const stillY = mobile ? 2.78 : 2.16;
     introPosition.set(stillX, stillY + .14 * Math.sin(elapsed * 1.15), -1.30);
     bodyPosition.set(x + .05, (hip + 1.045) * unfold, .035);
-    const headScale = lerp(mobile ? 2.45 : 2.88, 1, unfold);
+    const photoScale = lerp(mobile ? 2.45 : 2.88, 1, unfold);
+    const shrink = between(unfold, .48, .69);
+    const grow = between(unfold, .57, .88);
+    const faceHeight = photoScale * (1 - shrink) + grow;
     walker.head.position.copy(introPosition).lerp(bodyPosition, unfold);
+    walker.head.scale.setScalar(Math.max(.001, grow));
+    walker.head.visible = grow > .01;
+    walker.postcard.position.copy(walker.head.position);
+    walker.postcard.scale.setScalar(Math.max(.001, photoScale * (1 - shrink)));
+    walker.postcard.visible = shrink < .995;
     walker.root.position.copy(walker.head.position);
     walker.root.position.x -= .05 * unfold;
-    walker.root.position.y -= (hip + 1.045) * unfold + .51 * (headScale - unfold);
+    walker.root.position.y -= (hip + 1.045) * unfold + .47 * (faceHeight - unfold);
     walker.root.position.z -= .035 * unfold;
-    walker.head.scale.setScalar(headScale);
-    walker.head.rotation.set(
-      lerp(-.09 + Math.sin(elapsed * .82) * .09, -.035, unfold),
-      yaw,
-      lerp(-.13 + Math.sin(elapsed * .57) * .065, -.045 + Math.sin(distance * 7.6) * .026 * amount, unfold)
-    );
+    walker.postcard.rotation.set(-.09 + Math.sin(elapsed * .82) * .09, yaw, -.13);
+    walker.head.rotation.set(-.035, .32 + Math.sin(distance * .83) * .25, -.045 + Math.sin(distance * 7.6) * .042 * amount);
 
-    track.position.y = lerp(-4.3, 0, unfold);
-    track.visible = unfold > .025;
+    track.update(tileIndex);
+    track.group.position.y = lerp(-4.3, 0, unfold);
+    track.group.visible = unfold > .025;
     shadow.visible = unfold > .67;
     shadow.position.x = x;
-    shadow.position.y = track.position.y + .021;
+    shadow.position.y = track.group.position.y + .021;
     shadow.material.opacity = between(unfold, .67, 1);
-    skyline.position.set(.6, 0, -5.7);
+    skyline.position.set(x - (distance % 2.5), 0, -5.7);
     skyline.visible = unfold > .27;
     skyline.scale.y = lerp(.34, 1, unfold);
     rays.position.copy(introPosition);
@@ -113,12 +119,21 @@ async function start() {
       const fade = between(progress, .017, .129);
       stage.style.setProperty('--intro-offset', (-34 * fade) + 'px');
       stage.style.setProperty('--intro-opacity', String(1 - fade));
-      stage.style.setProperty('--route-progress', String(progress));
       const away = fade > .85;
       if (opening.inert !== away) opening.inert = away;
-      const chapter = progress < .235 ? 'Ночная прогулка' : progress < .92 ? 'Иду к пожеланиям' : 'Пришли';
-      if (chapter !== lastChapter) route.textContent = lastChapter = chapter;
+      stage.toggleAttribute('data-walking', away);
       lastProgress = progress;
+    }
+    if (!motionEnabled()) return;
+    if (localScreens > 1800) {
+      const shift = Math.round(viewport * 1200);
+      scrollOrigin += shift / viewport;
+      window.scrollTo({ top: offset - shift, behavior: 'instant' });
+      screens -= shift / viewport;
+      journey.style.setProperty('--journey-height', screens * 100 + 'svh');
+    } else if (localScreens > screens - 2.20) {
+      screens += 4;
+      journey.style.setProperty('--journey-height', screens * 100 + 'svh');
     }
   }
 
@@ -167,8 +182,19 @@ async function start() {
     optedIn = true;
     setMode();
   });
+  stage.querySelector('.route a').addEventListener('click', event => {
+    event.preventDefault();
+    history.replaceState(history.state, '', '#top');
+    scrollOrigin = 0;
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    screens = 4.5;
+    journey.style.removeProperty('--journey-height');
+    opening.inert = false;
+    opening.querySelector('.follow').focus({ preventScroll: true });
+  });
   preference.addEventListener('change', () => {
     optedIn = false;
+    scrollOrigin = 0;
     setMode();
   });
   renderer.domElement.addEventListener('webglcontextlost', () => {

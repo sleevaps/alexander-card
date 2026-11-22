@@ -8,93 +8,96 @@
 <meta property="og:title" content="Александр, с днём рождения!">
 <meta property="og:description" content="Пусть впереди будет много хорошего.">
 <meta property="og:type" content="website">
-<meta property="og:image" content="https://sleevaps.github.io/alexander-card/flash-poster.webp">
-<meta name="theme-color" content="#f5eddb">
+<meta property="og:image" content="https://sleevaps.github.io/alexander-card/alexander-photo.png">
+<meta name="theme-color" content="#fff5df">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Oswald:wght@700&display=swap">
 <style>
   :root {
-    --paper: #f5eddb;
-    --ink: #143b35;
-    --soft-ink: #3f564b;
-    --red: #a92f1d;
-    --rule: #c8c3aa;
-    --serif: "Playfair Display", Georgia, serif;
+    --paper: #fff5df;
+    --ink: #171823;
+    --yellow: #ffdf48;
+    --red: #a92c20;
+    --blue: #1d3979;
+    --display: Oswald, "Arial Narrow", system-ui, sans-serif;
     --sans: Manrope, system-ui, sans-serif;
   }
 
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
   body { margin: 0; color: var(--ink); background: var(--paper); font-family: var(--sans); }
-  .frame { width: min(1320px, calc(100% - 2 * clamp(20px, 5vw, 76px))); margin-inline: auto; }
-  :focus-visible { outline: 2px solid currentColor; outline-offset: 5px; }
+  .frame { width: min(1160px, calc(100% - 2 * clamp(18px, 5vw, 64px))); margin-inline: auto; }
+  :focus-visible { outline: 3px solid currentColor; outline-offset: 5px; }
+  h1, h2, p, figure { margin: 0; }
 
   .masthead {
     display: flex;
     align-items: center;
     gap: .65em;
-    padding-block: 20px;
-    border-bottom: 1px solid var(--rule);
-    font-size: .76rem;
-    font-weight: 800;
-    letter-spacing: .13em;
+    padding-block: 18px;
+    border-bottom: 3px solid var(--ink);
+    font: 700 1rem/1.2 var(--display);
+    letter-spacing: .15em;
     text-transform: uppercase;
   }
-  .masthead span { color: var(--red); font-size: 1.25rem; line-height: 1; }
+  .masthead span { color: var(--red); font-size: 1.45rem; }
   .cover {
     display: grid;
-    grid-template-columns: minmax(0, .95fr) minmax(0, 1.2fr);
+    grid-template-columns: minmax(0, 1.03fr) minmax(0, .97fr);
     align-items: center;
-    gap: clamp(26px, 4vw, 64px);
-    padding-block: clamp(28px, 4.75vw, 72px);
+    gap: clamp(28px, 5vw, 70px);
+    padding-block: clamp(30px, 5vw, 70px);
   }
-  h1, h2, p, figure { margin: 0; }
   h1 {
-    font: 600 clamp(2.6rem, 5.65vw, 5.65rem)/1.02 var(--serif);
-    letter-spacing: -.065em;
+    font: 700 clamp(2.5rem, 5.3vw, 5.6rem)/1.04 var(--display);
+    letter-spacing: -.035em;
+    text-transform: uppercase;
   }
-  h1 em { display: block; color: var(--red); font-weight: 600; }
-  .intro {
-    max-width: 29rem;
-    margin-block: clamp(16px, 2.2vw, 28px) clamp(20px, 3vw, 36px);
-    color: var(--soft-ink);
-    font-size: clamp(.98rem, 1.4vw, 1.14rem);
-    line-height: 1.65;
-  }
+  h1 em { display: block; color: var(--red); font-style: normal; }
+  .intro { max-width: 29rem; margin-block: 20px 26px; font-size: clamp(1rem, 1.5vw, 1.16rem); line-height: 1.65; }
   .action {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: .85em;
     min-height: 48px;
-    padding: 10px 20px;
-    border: 1px solid var(--ink);
-    color: var(--paper);
-    background: var(--ink);
-    font: 800 .9rem/1.4 var(--sans);
+    padding: 10px 19px;
+    border: 3px solid var(--ink);
+    color: var(--ink);
+    background: var(--yellow);
+    box-shadow: 4px 4px 0 var(--ink);
+    font: 700 1.1rem/1.2 var(--display);
+    text-transform: uppercase;
     text-decoration: none;
     cursor: pointer;
   }
-  .action:hover { color: var(--ink); background: var(--paper); }
-  .art { background: var(--ink); box-shadow: 8px 8px 0 #143b3521; }
-  .art img { display: block; width: 100%; height: auto; }
+  .action:hover { background: var(--paper); }
+  .action:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--ink); }
+  .art {
+    padding: clamp(12px, 2.5vw, 31px);
+    border: 3px solid var(--ink);
+    background-color: var(--yellow);
+    background-image: radial-gradient(#17182366 1px, transparent 1.5px), conic-gradient(from 18deg, #fff6ca 0deg 22deg, transparent 22deg 53deg, #fff6ca 53deg 75deg, transparent 75deg 113deg, #fff6ca 113deg 141deg, transparent 141deg 191deg, #fff6ca 191deg 218deg, transparent 218deg 261deg, #fff6ca 261deg 288deg, transparent 288deg 330deg, #fff6ca 330deg);
+    background-size: 6px 6px, 100% 100%;
+    box-shadow: 7px 7px 0 var(--ink);
+  }
+  .art img { display: block; width: 100%; height: auto; border: 3px solid var(--ink); box-shadow: 4px 4px 0 var(--ink); }
 
   .message {
     display: grid;
     grid-template-columns: minmax(0, .82fr) minmax(0, 1.2fr);
     align-items: start;
-    gap: clamp(16px, 5vw, 70px);
-    padding-block: clamp(28px, 5vw, 68px);
-    border-top: 1px solid var(--rule);
+    gap: clamp(12px, 4vw, 52px);
+    margin-bottom: clamp(32px, 6vw, 74px);
+    padding: clamp(20px, 3.5vw, 40px);
+    border: 3px solid var(--ink);
+    background: #fffdf4;
+    box-shadow: 6px 6px 0 var(--ink);
   }
-  .message h2, .wishes h2 {
-    font: 600 clamp(2rem, 4vw, 4.15rem)/1.05 var(--serif);
-    letter-spacing: -.05em;
-  }
-  .message p { max-width: 35rem; padding-top: .3em; font-size: clamp(1rem, 1.65vw, 1.25rem); line-height: 1.7; }
-
-  .wishes { padding-block: clamp(40px, 6vw, 88px) 56px; color: var(--paper); background: var(--ink); }
+  .message h2, .wishes h2 { font: 700 clamp(1.8rem, 3.8vw, 3.65rem)/1.07 var(--display); text-transform: uppercase; }
+  .message p { max-width: 35rem; font-size: clamp(1rem, 1.6vw, 1.19rem); line-height: 1.65; }
+  .wishes { padding-block: clamp(34px, 6vw, 78px) 56px; border-top: 4px solid var(--ink); color: var(--paper); background: var(--blue); }
   .wishes-head {
     display: flex;
     align-items: end;
@@ -102,36 +105,35 @@
     flex-wrap: wrap;
     gap: 12px 20px;
     padding-bottom: 22px;
-    border-bottom: 1px solid #e6e4b46b;
+    border-bottom: 2px solid #fff5df8c;
   }
-  .badge { color: #dfdfbd; font-size: .85rem; }
-  #count { font-weight: 800; color: #ffce91; font-variant-numeric: tabular-nums; }
+  .badge { padding: 6px 10px; border: 2px solid var(--ink); background: var(--yellow); color: var(--ink); font-size: .86rem; font-weight: 700; }
+  #count { font-weight: 800; font-variant-numeric: tabular-nums; }
   .stream {
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
-    gap: .28em .55em;
+    gap: .28em .52em;
     padding-block: 24px;
-    font-size: clamp(1.18rem, 2.5vw, 2.05rem);
-    line-height: 1.48;
+    font-size: clamp(1.15rem, 2.5vw, 2.05rem);
+    line-height: 1.4;
   }
-  .it { max-width: 100%; overflow-wrap: anywhere; animation: rise .45s ease both; }
-  .cm { color: #aebfa9; }
-  .wa { font: italic 600 1.15em var(--serif); }
-  .wb { color: #ffce91; font-size: .82em; font-weight: 800; text-transform: uppercase; }
-  .wc { color: #c9d6b9; font-size: .83em; }
-  .wd { color: #f5ad93; font: 600 1.26em var(--serif); }
-  .we { font-size: .9em; font-weight: 700; }
-  .wf { color: #ffce91; font: italic 600 1.03em var(--serif); }
-  .dots { color: #ffce91; }
-  .more { border-color: var(--paper); }
+  .it { max-width: 100%; overflow-wrap: anywhere; animation: rise .4s ease both; }
+  .cm { color: #e1e5f5; }
+  .wa { font: 700 1.12em var(--display); text-transform: uppercase; }
+  .wb { color: var(--yellow); font-size: .86em; font-weight: 800; }
+  .wc { color: #e1e5f5; font-size: .83em; }
+  .wd { color: #ffc0b2; font: 700 1.23em var(--display); text-transform: uppercase; }
+  .we { font-size: .95em; font-weight: 700; }
+  .wf { color: var(--yellow); font-size: .96em; font-weight: 800; }
+  .dots { color: var(--yellow); }
+  .more:focus-visible { outline-color: var(--paper); }
   .more[hidden] { display: none; }
   #sentinel { height: 1px; }
 
-  @media (max-width: 760px) {
+  @media (max-width: 730px) {
     .cover, .message { grid-template-columns: minmax(0, 1fr); }
-    h1 { font-size: clamp(2.45rem, 9.75vw, 4.8rem); }
-    .wishes-head { align-items: start; }
+    h1 { font-size: clamp(2.45rem, 10.5vw, 4.8rem); }
   }
   @keyframes rise { from { opacity: 0; transform: translateY(6px); } }
   @media (prefers-reduced-motion: reduce) {
@@ -150,7 +152,7 @@
       <a class="action" href="#wishes">К пожеланиям <span aria-hidden="true">↓</span></a>
     </div>
     <figure class="art">
-      <img src="flash-poster.webp" width="1536" height="1024" fetchpriority="high" alt="Портрет Александра с яркой вспышкой на фоне ночного двора">
+      <img src="alexander-photo.png" width="640" height="640" fetchpriority="high" alt="Фотография Александра со вспышкой во дворе">
     </figure>
   </div>
 </header>

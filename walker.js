@@ -1,5 +1,5 @@
 import {
-  Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, PlaneGeometry, SRGBColorSpace, TorusGeometry,
+  Group, Mesh, MeshStandardMaterial, TorusGeometry,
   TextureLoader, Vector3
 } from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
@@ -13,10 +13,7 @@ const stance = .62;
 
 export async function createWalker(scene) {
   const loader = new TextureLoader();
-  const [front, back] = await Promise.all([
-    loader.loadAsync('alexander-photo.png'),
-    loader.loadAsync('alexander-night.png')
-  ]);
+  const front = await loader.loadAsync('alexander-photo.png');
   const ivory = material(0xffedbb, .42);
   const jacket = material(0x4c5e83, .64);
   const seams = material(0x334661, .68);
@@ -24,17 +21,7 @@ export async function createWalker(scene) {
   const pants = material(0x393a59, .74);
   const soles = material(0x1c2750, .62);
   const root = new Group();
-  const postcard = new Group();
   const head = createPortraitHead(front.image);
-
-  postcard.add(box(1, 1.08, .075, .04, ivory));
-  for (const [texture, side] of [[front, 1], [back, -1]]) {
-    texture.colorSpace = SRGBColorSpace;
-    const photo = new Mesh(new PlaneGeometry(.91, .91), new MeshBasicMaterial({ map: texture, toneMapped: false }));
-    photo.position.set(0, .033, side * .039);
-    if (side < 0) photo.rotation.y = Math.PI;
-    postcard.add(photo);
-  }
 
   const coat = box(.43, .66, .60, .15, jacket);
   const waist = box(.38, .22, .51, .081, pants);
@@ -55,7 +42,7 @@ export async function createWalker(scene) {
     return { side, thigh, shin, boot, sole, upperArm, sleeve, glove };
   }
   const limbs = [makeLimb(-1), makeLimb(1)];
-  scene.add(root, head, postcard);
+  scene.add(root, head);
 
   function pose({ distance, amount, unfolding }) {
     const gait = distance / stride;
@@ -101,7 +88,7 @@ export async function createWalker(scene) {
     return hipHeight;
   }
 
-  return { root, head, postcard, pose };
+  return { root, head, pose };
 }
 
 function material(color, roughness) {

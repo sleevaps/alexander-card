@@ -4,6 +4,7 @@ import {
   PerspectiveCamera, Scene, SRGBColorSpace, Vector3, WebGLRenderer
 } from 'three';
 import { createWalker } from './walker.js';
+import { createLamp } from './lamp.js';
 import { createShadow, createTrack, tileLength } from './track.js';
 
 const journey = document.querySelector('.journey');
@@ -40,6 +41,8 @@ async function start() {
   const track = createTrack(scene);
   const shadow = createShadow(scene);
   const skyline = createSkyline(scene);
+  const coverLamp = createLamp();
+  scene.add(coverLamp.head);
   const rays = createRays(scene);
   const introPosition = new Vector3();
   const bodyPosition = new Vector3();
@@ -75,21 +78,22 @@ async function start() {
     const stillY = mobile ? 2.78 : 2.16;
     introPosition.set(stillX, stillY + .14 * Math.sin(elapsed * 1.15), -1.30);
     bodyPosition.set(x + .05, (hip + 1.045) * unfold, .035);
-    const photoScale = lerp(mobile ? 2.45 : 2.88, 1, unfold);
+    const lampScale = lerp(mobile ? 2.25 : 2.72, 1, unfold);
     const shrink = between(unfold, .48, .69);
     const grow = between(unfold, .57, .88);
-    const faceHeight = photoScale * (1 - shrink) + grow;
+    const faceHeight = lampScale * (1 - shrink) + grow;
     walker.head.position.copy(introPosition).lerp(bodyPosition, unfold);
     walker.head.scale.setScalar(Math.max(.001, grow));
     walker.head.visible = grow > .01;
-    walker.postcard.position.copy(walker.head.position);
-    walker.postcard.scale.setScalar(Math.max(.001, photoScale * (1 - shrink)));
-    walker.postcard.visible = shrink < .995;
+    coverLamp.head.position.copy(walker.head.position);
+    coverLamp.head.scale.setScalar(Math.max(.001, lampScale * (1 - shrink)));
+    coverLamp.head.visible = shrink < .995;
+    coverLamp.setPower(.36 + .64 * (motionEnabled() ? between(elapsed, 0, 1.15) : 1));
     walker.root.position.copy(walker.head.position);
     walker.root.position.x -= .05 * unfold;
     walker.root.position.y -= (hip + 1.045) * unfold + .47 * (faceHeight - unfold);
     walker.root.position.z -= .035 * unfold;
-    walker.postcard.rotation.set(-.09 + Math.sin(elapsed * .82) * .09, yaw, -.13);
+    coverLamp.head.rotation.set(.08 + Math.sin(elapsed * .82) * .12, yaw - .39, -.13);
     walker.head.rotation.set(-.035, .32 + Math.sin(distance * .83) * .25, -.045 + Math.sin(distance * 7.6) * .042 * amount);
 
     track.update(tileIndex);

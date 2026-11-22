@@ -4,57 +4,48 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Александр, с днём рождения!</title>
-<meta name="description" content="Два кадра и поздравление для Александра.">
+<meta name="description" content="Ночная прогулка и поздравление для Александра.">
 <meta property="og:title" content="Александр, с днём рождения!">
 <meta property="og:image" content="https://sleevaps.github.io/alexander-card/alexander-photo.png">
-<meta name="theme-color" content="#1b1714">
+<meta name="theme-color" content="#101530">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;800;900&family=IBM+Plex+Mono:wght@500&display=swap">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header class="opening" id="top">
-  <div class="opening-inner">
-    <div class="intro">
-      <h1><span>С днём<br> рождения,</span><strong>Александр!</strong></h1>
-      <p>Сань, я нашёл два кадра, которые сложно поставить рядом. Поэтому поставил их спинами друг к другу.</p>
+<header class="journey" id="top">
+  <div class="stage">
+    <div class="sky"></div>
+    <div class="render" aria-hidden="true"></div>
+    <img class="portrait" src="alexander-photo.png" width="640" height="640" alt="Александр во дворе, фото со вспышкой">
+    <div class="opening">
+      <h1>Александр,<br><span>с днём<br>рождения.</span></h1>
+      <p>Твоя фотка вышла прогуляться. Листай за ней.</p>
       <div class="controls">
-        <button class="shutter" id="shutter" type="button" aria-pressed="false" aria-controls="snapshot" hidden>
-          <span class="shutter-icon" aria-hidden="true"></span>
-          Щёлкнуть затвором
-        </button>
-        <a class="text-link" href="#wishes">К поздравлению <span aria-hidden="true">↘</span></a>
+        <a class="follow" href="#walk">Пошли <span aria-hidden="true">↓</span></a>
+        <a class="skip" href="#wishes">К пожеланиям</a>
       </div>
     </div>
-
-    <figure class="scene" id="scene">
-      <div class="viewfinder" aria-hidden="true"></div>
-      <div class="render" aria-hidden="true"></div>
-      <img class="snapshot" id="snapshot" src="alexander-photo.png" width="640" height="640" alt="Александр во дворе, кадр со вспышкой" fetchpriority="high">
-      <div class="exposure" aria-hidden="true"></div>
-      <figcaption id="frame-label" aria-live="polite"><span aria-hidden="true">✦</span> Кадр со вспышкой</figcaption>
-    </figure>
+    <div class="route" aria-hidden="true"><span>Ночная прогулка</span><i></i></div>
   </div>
+  <span id="walk"></span>
 </header>
-
 <main id="wishes">
   <section class="letter" aria-labelledby="letter-title">
-    <div class="contact">
-      <img src="alexander-night.png" width="640" height="640" alt="Ночной портрет Александра в зелёном свете" loading="lazy">
-    </div>
-    <div class="letter-copy">
-      <h2 id="letter-title">А если серьёзно.</h2>
-      <p>Сань, с днём рождения! Желаю, чтобы на свои дела хватало сил, на близких — времени, а на спонтанные планы всегда находилось «да, погнали».</p>
+    <figure><img src="alexander-night.png" width="640" height="640" alt="Ночной портрет Александра в зелёном свете" loading="lazy"></figure>
+    <div>
+      <h2 id="letter-title">Сань, с днём рождения.</h2>
+      <p>Пусть будет куда сорваться, с кем зависнуть и ради чего вставать пораньше. А если планов нет — пусть и так будет хорошо.</p>
     </div>
   </section>
   <section class="wishes" aria-labelledby="wishes-title">
-    <h2 id="wishes-title">Ну и раз пошло такое…</h2>
+    <h2 id="wishes-title">И ещё тебе</h2>
     <div id="stream" class="stream">
       <span id="dots" aria-hidden="true">…</span>
-      <noscript>Здоровья, удачи и побольше вечеров, которые есть зачем вспоминать!</noscript>
+      <noscript>Удачи, сил, своих рядом и свободы!</noscript>
     </div>
-    <button class="text-link more" id="more" type="button" hidden>Ещё пожеланий <span aria-hidden="true">＋</span></button>
+    <button id="more" type="button" hidden>Ещё пожеланий <span aria-hidden="true">＋</span></button>
     <div id="sentinel"></div>
   </section>
 </main>

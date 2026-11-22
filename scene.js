@@ -1,232 +1,231 @@
 import {
-  ACESFilmicToneMapping, Color, DirectionalLight, Group, HemisphereLight,
-  IcosahedronGeometry, MathUtils, Mesh, MeshBasicMaterial, MeshStandardMaterial,
-  PerspectiveCamera, PlaneGeometry, PMREMGenerator, Scene, SRGBColorSpace,
-  TextureLoader, TorusGeometry, TorusKnotGeometry, WebGLRenderer
+  ACESFilmicToneMapping, AmbientLight, BoxGeometry, BufferGeometry, DirectionalLight,
+  Group, HemisphereLight, Line, LineBasicMaterial, MathUtils, Mesh, MeshBasicMaterial,
+  PerspectiveCamera, Scene, SRGBColorSpace, Vector3, WebGLRenderer
 } from 'three';
-import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { createWalker } from './walker.js';
+import { createShadow, createTrack } from './track.js';
 import './wishes.js';
 
-const stage = document.querySelector('#scene');
+const journey = document.querySelector('.journey');
+const stage = journey.querySelector('.stage');
 const host = stage.querySelector('.render');
-const exposure = stage.querySelector('.exposure');
-const snapshot = document.querySelector('#snapshot');
-const shutter = document.querySelector('#shutter');
-const caption = document.querySelector('#frame-label');
-const motion = matchMedia('(prefers-reduced-motion: reduce)');
-const stillFrames = [
-  { src: 'alexander-photo.png', alt: 'Александр во дворе, кадр со вспышкой', label: 'Кадр со вспышкой' },
-  { src: 'alexander-night.png', alt: 'Ночной портрет Александра в зелёном свете', label: 'Зелёный свет' }
-];
+const opening = stage.querySelector('.opening');
+const route = stage.querySelector('.route span');
+const preference = matchMedia('(prefers-reduced-motion: reduce)');
+const lerp = MathUtils.lerp;
+const between = (value, start, end) => MathUtils.smoothstep(value, start, end);
+const pathStart = -5.75;
+const pathLength = 12.75;
 
-let selected = 0;
-let rig;
-let flash;
-
-function showFrame() {
-  const frame = stillFrames[selected];
-  snapshot.src = frame.src;
-  snapshot.alt = frame.alt;
-  caption.lastChild.textContent = ' ' + frame.label;
-  shutter.setAttribute('aria-pressed', String(selected === 1));
-}
-
-shutter.hidden = false;
-shutter.addEventListener('click', () => {
-  selected = 1 - selected;
-  showFrame();
-  rig?.turn();
-  if (motion.matches) return;
-  flash?.cancel();
-  flash = exposure.animate(
-    [{ opacity: 0 }, { opacity: .54, offset: .22 }, { opacity: 0 }],
-    { duration: 510, easing: 'ease-out' }
-  );
-});
-
-async function setupScene() {
+async function start() {
   if (!window.WebGL2RenderingContext) return;
-  const renderer = new WebGLRenderer({ alpha: true, antialias: true });
+  const renderer = new WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'low-power' });
   renderer.outputColorSpace = SRGBColorSpace;
   renderer.toneMapping = ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.23;
+  renderer.toneMappingExposure = 1.34;
   host.append(renderer.domElement);
 
   const scene = new Scene();
-  const camera = new PerspectiveCamera(43, 1, .1, 45);
-  camera.position.z = 7.9;
+  const camera = new PerspectiveCamera(42, 1, .1, 75);
+  scene.add(new AmbientLight(0xb2baff, .64));
+  scene.add(new HemisphereLight(0xfaf3e5, 0x293975, 2.45));
+  const light = new DirectionalLight(0xffdfad, 3.1);
+  light.position.set(-2, 5, 5);
+  scene.add(light);
+  const rim = new DirectionalLight(0x8499ff, 3.4);
+  rim.position.set(5, 2, -5);
+  scene.add(rim);
 
-  const environment = new RoomEnvironment();
-  const pmrem = new PMREMGenerator(renderer);
-  const ambient = pmrem.fromScene(environment, .05);
-  scene.environment = ambient.texture;
-  environment.dispose();
-  pmrem.dispose();
+  const walker = await createWalker(scene);
+  await document.fonts.load('900 36px "Golos Text"', 'УДАЧИ').catch(() => {});
+  const track = createTrack(scene);
+  const shadow = createShadow(scene);
+  const skyline = createSkyline(scene);
+  const rays = createRays(scene);
+  const introPosition = new Vector3();
+  const bodyPosition = new Vector3();
 
-  scene.add(new HemisphereLight(0xffead6, 0x784135, 2));
-  const key = new DirectionalLight(0xffd7b4, 3.7);
-  key.position.set(-4, 5, 6);
-  scene.add(key);
-  const edge = new DirectionalLight(0xff794c, 3.2);
-  edge.position.set(4, -2, 1);
-  scene.add(edge);
-
-  const metal = new MeshStandardMaterial({ color: 0x8b5d42, roughness: .23, metalness: .89 });
-  const enamel = new MeshStandardMaterial({ color: 0x392923, roughness: .32, metalness: .58 });
-  const copper = new MeshStandardMaterial({ color: 0xf08e59, roughness: .22, metalness: .86 });
-  const bulb = new MeshStandardMaterial({ color: 0xffb773, emissive: new Color(0xb1340d), emissiveIntensity: .34, roughness: .25, metalness: .58 });
-
-  const cassette = new Group();
-  const chassis = new Mesh(new RoundedBoxGeometry(3.12, 3.30, .24, 4, .12), metal);
-  cassette.add(chassis);
-  const inset = new Mesh(new RoundedBoxGeometry(2.98, 3.16, .261, 4, .09), enamel);
-  cassette.add(inset);
-
-  const loader = new TextureLoader();
-  const plateGeometry = new PlaneGeometry(2.77, 2.77);
-  const textures = await Promise.all(stillFrames.map(frame => loader.loadAsync(frame.src)));
-
-  for (const [index, texture] of textures.entries()) {
-    const side = index === 0 ? 1 : -1;
-    texture.colorSpace = SRGBColorSpace;
-    texture.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
-    const plate = new Mesh(plateGeometry, new MeshBasicMaterial({ map: texture, toneMapped: false }));
-    plate.position.set(0, .08, side * .136);
-    if (side < 0) plate.rotation.y = Math.PI;
-    cassette.add(plate);
-
-    const trim = new Mesh(new RoundedBoxGeometry(1.08, .06, .022, 2, .02), copper);
-    trim.position.set(.78 * side, -1.43, side * .144);
-    cassette.add(trim);
-    const stud = new Mesh(new IcosahedronGeometry(.058, 1), bulb);
-    stud.position.set(-1.22 * side, -1.43, side * .147);
-    cassette.add(stud);
-  }
-  scene.add(cassette);
-
-  const orbit = new Group();
-  const rail = new Mesh(new TorusGeometry(2.81, .018, 10, 120), copper);
-  const track = new Mesh(new TorusGeometry(2.53, .007, 8, 120), metal);
-  orbit.add(rail, track);
-  orbit.rotation.set(.96, -.32, -.39);
-  orbit.position.z = -.68;
-  scene.add(orbit);
-
-  const knot = new Mesh(new TorusKnotGeometry(.35, .106, 112, 12), copper);
-  const prism = new Mesh(new IcosahedronGeometry(.34, 0), metal);
-  const jewel = new Mesh(new IcosahedronGeometry(.16, 0), bulb);
-  const satellite = new Mesh(new IcosahedronGeometry(.10, 1), copper);
-  scene.add(knot, prism, jewel);
-  orbit.add(satellite);
-
-  let targetTurn = selected * Math.PI;
-  let currentTurn = targetTurn;
-  let tweenStart = performance.now();
-  let previous = tweenStart;
-  let activeTime = 0;
-  let pointerX = 0;
-  let pointerY = 0;
-  let tiltX = 0;
-  let tiltY = 0;
-  let frameId = 0;
-  let inView = true;
-  let lost = false;
+  let mobile = false;
+  let near = true;
+  let frame = 0;
+  let contextLost = false;
+  let lastProgress = -1;
+  let lastChapter = '';
+  let entered = performance.now();
 
   function draw(now) {
-    const elapsed = Math.min(.05, (now - previous) / 1000);
-    previous = now;
-    const animated = !motion.matches;
-    activeTime += animated ? elapsed : 0;
-    const t = activeTime;
-    const ease = 1 - Math.exp(-5.6 * elapsed);
-    const settling = animated ? Math.exp(-t * 2.4) : 0;
-    currentTurn = animated ? MathUtils.lerp(currentTurn, targetTurn, ease) : targetTurn;
-    tiltX = animated ? MathUtils.lerp(tiltX, pointerX, ease) : 0;
-    tiltY = animated ? MathUtils.lerp(tiltY, pointerY, ease) : 0;
-    const impact = animated ? Math.sin(Math.min(Math.PI, (now - tweenStart) / 805 * Math.PI)) : 0;
+    const travel = Math.max(1, journey.offsetHeight - stage.offsetHeight);
+    const progress = preference.matches ? 0 : MathUtils.clamp(-journey.getBoundingClientRect().top / travel, 0, 1);
+    const elapsed = preference.matches ? 0 : (now - entered) / 1000;
+    const unfold = between(progress, .045, .30);
+    const walk = MathUtils.clamp((progress - .245) / .68, 0, 1);
+    const amount = between(walk, 0, .09) * (1 - between(walk, .90, 1));
+    const x = pathStart + pathLength * walk;
+    const distance = x - pathStart;
+    const hip = walker.pose({ distance, amount, unfolding: unfold });
 
-    cassette.rotation.set(-.13 + tiltY * .19, -.34 + currentTurn + tiltX * .34 - settling * .95, -.12);
-    cassette.position.set(0, Math.sin(t * 1.27) * .095 - settling * .45, impact * .45);
-    orbit.rotation.z = -.39 + Math.sin(t * .7) * .17 + impact * .21;
-    satellite.position.set(Math.cos(t * .84) * 2.81, Math.sin(t * .84) * 2.81, 0);
-    knot.position.set(2.16 + tiltX * .27, 1.22 + .16 * Math.sin(t * 1.5), .37 + impact * .7);
-    knot.rotation.set(t * .51, -.6 + t * .64, -.4);
-    prism.position.set(-2.13, -.95 + .20 * Math.cos(t * 1.3), .6 + tiltX * .4);
-    prism.rotation.set(.35 + t * .46, .40 + t * .39, .4);
-    jewel.position.set(1.93, -1.73 + .18 * Math.sin(t * 1.7), -.1 + impact);
-    jewel.rotation.y = t * .93;
+    const restingYaw = .28 + Math.sin(elapsed * .63) * .48;
+    const arrivalYaw = restingYaw - unfold * 6.05;
+    const yaw = lerp(arrivalYaw, .39, unfold);
+    const stillX = mobile ? 0 : 2.42;
+    const stillY = mobile ? 2.78 : 2.16;
+    introPosition.set(stillX, stillY + .14 * Math.sin(elapsed * 1.15), -1.30);
+    bodyPosition.set(x + .05, (hip + 1.045) * unfold, .035);
+    const headScale = lerp(mobile ? 2.45 : 2.88, 1, unfold);
+    walker.head.position.copy(introPosition).lerp(bodyPosition, unfold);
+    walker.root.position.copy(walker.head.position);
+    walker.root.position.x -= .05 * unfold;
+    walker.root.position.y -= (hip + 1.045) * unfold + .51 * (headScale - unfold);
+    walker.root.position.z -= .035 * unfold;
+    walker.head.scale.setScalar(headScale);
+    walker.head.rotation.set(
+      lerp(-.09 + Math.sin(elapsed * .82) * .09, -.035, unfold),
+      yaw,
+      lerp(-.13 + Math.sin(elapsed * .57) * .065, -.045 + Math.sin(distance * 7.6) * .026 * amount, unfold)
+    );
+
+    track.position.y = lerp(-4.3, 0, unfold);
+    track.visible = unfold > .025;
+    shadow.visible = unfold > .67;
+    shadow.position.x = x;
+    shadow.position.y = track.position.y + .021;
+    shadow.material.opacity = between(unfold, .67, 1);
+    skyline.position.set(.6, 0, -5.7);
+    skyline.visible = unfold > .27;
+    skyline.scale.y = lerp(.34, 1, unfold);
+    rays.position.copy(introPosition);
+    rays.rotation.set(.07 + Math.sin(elapsed * .5) * .10, .18, elapsed * -.035);
+    rays.visible = unfold < .68;
+    rays.scale.setScalar(1 - unfold * .44);
+    rays.children.forEach(line => { line.material.opacity = (1 - between(unfold, .1, .67)) * .57; });
+
+    const viewX = lerp(mobile ? 0 : .1, x + (mobile ? .08 : .8), unfold);
+    const viewY = lerp(mobile ? 1.01 : 2.08, .96, unfold);
+    const viewDepth = lerp(mobile ? 8.55 : 7.45, mobile ? 8.55 : 6.95, unfold);
+    camera.position.set(viewX + unfold * (mobile ? .82 : 2.75), lerp(mobile ? 1.19 : 2.45, 3.36, unfold), viewDepth);
+    camera.lookAt(viewX, viewY, 0);
     renderer.render(scene, camera);
+
+    if (progress !== lastProgress) {
+      const fade = between(progress, .017, .129);
+      stage.style.setProperty('--intro-offset', (-34 * fade) + 'px');
+      stage.style.setProperty('--intro-opacity', String(1 - fade));
+      stage.style.setProperty('--route-progress', String(progress));
+      const away = fade > .85;
+      if (opening.inert !== away) opening.inert = away;
+      const chapter = progress < .235 ? 'Ночная прогулка' : progress < .92 ? 'Иду к пожеланиям' : 'Пришли';
+      if (chapter !== lastChapter) route.textContent = lastChapter = chapter;
+      lastProgress = progress;
+    }
   }
 
   function loop(now) {
-    frameId = 0;
+    frame = 0;
     draw(now);
     sync();
   }
 
   function sync() {
-    if (lost || !inView || document.hidden || motion.matches) {
-      if (frameId) cancelAnimationFrame(frameId);
-      frameId = 0;
+    if (!near || document.hidden || contextLost || preference.matches) {
+      if (frame) cancelAnimationFrame(frame);
+      frame = 0;
       return;
     }
-    if (!frameId) frameId = requestAnimationFrame(loop);
+    if (!frame) frame = requestAnimationFrame(loop);
   }
 
   function resize() {
     const { width, height } = host.getBoundingClientRect();
-    if (!width || !height) return;
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.6));
+    if (!width || !height || contextLost) return;
+    mobile = width <= 700;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, mobile ? 1.36 : 1.55));
     renderer.setSize(width, height, false);
     camera.aspect = width / height;
-    camera.position.z = camera.aspect < .94 ? 8.55 : 7.9;
+    camera.fov = mobile ? 46 : 42;
     camera.updateProjectionMatrix();
-    if (!lost) draw(performance.now());
+    draw(performance.now());
+  }
+
+  function setMode() {
+    journey.dataset.scene = preference.matches ? 'still' : 'moving';
+    entered = performance.now();
+    resize();
+    sync();
   }
 
   new ResizeObserver(resize).observe(host);
   new IntersectionObserver(([entry]) => {
-    inView = entry.isIntersecting;
+    near = entry.isIntersecting;
     sync();
   }).observe(stage);
   document.addEventListener('visibilitychange', sync);
-  motion.addEventListener('change', () => {
-    if (!lost) draw(performance.now());
-    sync();
-  });
-  stage.addEventListener('pointermove', event => {
-    if (event.pointerType === 'touch') return;
-    const rect = stage.getBoundingClientRect();
-    pointerX = (event.clientX - rect.left) / rect.width * 2 - 1;
-    pointerY = (event.clientY - rect.top) / rect.height * 2 - 1;
-  });
-  stage.addEventListener('pointerleave', () => { pointerX = 0; pointerY = 0; });
-
+  preference.addEventListener('change', setMode);
   renderer.domElement.addEventListener('webglcontextlost', () => {
-    lost = true;
-    delete stage.dataset.webgl;
+    contextLost = true;
+    delete journey.dataset.scene;
+    opening.inert = false;
+    stage.style.removeProperty('--intro-offset');
+    stage.style.removeProperty('--intro-opacity');
+    lastProgress = -1;
     sync();
   });
   renderer.domElement.addEventListener('webglcontextrestored', () => {
-    lost = false;
-    resize();
-    stage.dataset.webgl = 'ready';
-    sync();
+    contextLost = false;
+    setMode();
   });
-
-  resize();
-  stage.dataset.webgl = 'ready';
-  sync();
-  return {
-    turn() {
-      targetTurn += Math.PI;
-      tweenStart = performance.now();
-      if (!lost && motion.matches) draw(tweenStart);
-    }
-  };
+  setMode();
 }
 
-setupScene().then(instance => { rig = instance; }).catch(() => {
+function createRays(scene) {
+  const rays = new Group();
+  for (const [radius, shift] of [[1.9, -.32], [2.16, .12]]) {
+    const points = [];
+    for (let i = 0; i <= 86; i++) {
+      const angle = (i / 86) * Math.PI * 1.65 + shift;
+      points.push(new Vector3(Math.cos(angle) * radius, Math.sin(angle) * radius * .46, -.15 + Math.sin(angle) * .65));
+    }
+    const ring = new Line(
+      new BufferGeometry().setFromPoints(points),
+      new LineBasicMaterial({ color: 0xe6bd6b, transparent: true, opacity: .57 })
+    );
+    ring.rotation.z = -.39 + shift;
+    rays.add(ring);
+  }
+  scene.add(rays);
+  return rays;
+}
+
+function createSkyline(scene) {
+  const group = new Group();
+  const body = new MeshBasicMaterial({ color: 0x252e61 });
+  const beam = new MeshBasicMaterial({ color: 0x8999cf });
+  const column = new BoxGeometry(.10, 2.1, .12);
+  const head = new BoxGeometry(.29, .056, .14);
+  const retainingWall = new Mesh(new BoxGeometry(36, 1.16, .65), new MeshBasicMaterial({ color: 0x141b3d }));
+  retainingWall.position.set(0, -1.65, 0);
+  group.add(retainingWall);
+
+  const rail = new Mesh(new BoxGeometry(36, .044, .044), body);
+  rail.position.set(0, -.39, .034);
+  group.add(rail);
+  const lowerRail = rail.clone();
+  lowerRail.position.y = -.76;
+  group.add(lowerRail);
+
+  for (let i = -5; i <= 5; i++) {
+    const post = new Mesh(column, body);
+    const lamp = new Mesh(head, beam);
+    post.position.set(i * 2.5, -.2, 0);
+    lamp.position.set(post.position.x, .83, 0);
+    group.add(post, lamp);
+  }
+  scene.add(group);
+  return group;
+}
+
+start().catch(() => {
   host.replaceChildren();
+  delete journey.dataset.scene;
+  opening.inert = false;
 });

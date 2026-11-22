@@ -13,7 +13,7 @@ const stance = .62;
 
 export async function createWalker(scene) {
   const loader = new TextureLoader();
-  const front = await loader.loadAsync('sanya-face.webp');
+  const front = await loader.loadAsync('alexander-photo.png');
   const ivory = material(0xffedbb, .42);
   const jacket = material(0x34434d, .74);
   const seams = material(0x1b2733, .73);

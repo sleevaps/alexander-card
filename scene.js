@@ -15,6 +15,8 @@ const lerp = MathUtils.lerp;
 const between = (value, start, end) => MathUtils.smoothstep(value, start, end);
 const pathStart = -5.75;
 const unitsPerScreen = 7.65;
+const walkStart = .30;
+const standDeckHeight = .122;
 
 async function start() {
   if (!window.WebGL2RenderingContext) return;
@@ -62,8 +64,8 @@ async function start() {
     const localScreens = offset / viewport;
     const progress = motionEnabled() ? (scrollOrigin + localScreens) / 2.45 : 0;
     const elapsed = motionEnabled() ? (now - entered) / 1000 : 0;
-    const unfold = between(progress, .045, .30);
-    const distance = Math.max(0, progress - .245) * 2.45 * unitsPerScreen;
+    const unfold = between(progress, .045, walkStart);
+    const distance = Math.max(0, progress - walkStart) * 2.45 * unitsPerScreen;
     const amount = between(distance, 0, .85);
     const tileIndex = Math.floor(distance / tileLength);
     const x = pathStart + distance - tileIndex * tileLength;
@@ -87,18 +89,20 @@ async function start() {
       lerp(-.04 + Math.sin(elapsed * 1.35) * .032, -.045 + Math.sin(distance * 7.6) * .042 * amount, unfold)
     );
 
-    stand.visible = unfold < .87;
-    stand.position.copy(introPosition);
-    stand.position.y -= .14 * size + unfold * .82;
-    stand.scale.setScalar(size * (1 - unfold));
+    const dock = between(unfold, .06, .91);
+    const handoff = between(unfold, .91, 1);
+    const standWidth = size * (1 - .96 * handoff);
+    stand.visible = handoff < .97;
+    stand.scale.set(standWidth, size * (1 - .93 * handoff), standWidth);
+    stand.position.copy(walker.root.position);
+    stand.position.y -= standDeckHeight * stand.scale.y;
 
     track.update(tileIndex);
-    track.group.position.y = lerp(-4.3, 0, unfold);
-    track.group.visible = unfold > .025;
-    shadow.visible = unfold > .67;
-    shadow.position.x = x;
-    shadow.position.y = track.group.position.y + .021;
-    shadow.material.opacity = between(unfold, .67, 1);
+    track.group.position.y = lerp(-4.3, walker.root.position.y - .025 * (1 - handoff), dock);
+    track.group.visible = dock > .025;
+    shadow.visible = handoff > 0;
+    shadow.position.set(walker.root.position.x, track.group.position.y + .021, walker.root.position.z);
+    shadow.material.opacity = handoff;
     skyline.position.set(x - (distance % 2.5), 0, -5.7);
     skyline.visible = unfold > .27;
     skyline.scale.y = lerp(.34, 1, unfold);

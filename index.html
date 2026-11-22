@@ -7,46 +7,80 @@
 <meta property="og:title" content="Александр, с днём рождения!">
 <meta property="og:image" content="https://sleevaps.github.io/alexander-card/alexander-photo.png">
 <style>
+  :root {
+    --ink: #252a36;
+    --blue: #344d79;
+    --paper: #fffdfa;
+    --line: #dedfe4;
+  }
+  * { box-sizing: border-box; }
   body {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 32px 20px 56px;
-    color: #222;
-    background: #faf9f6;
-    font: 1rem/1.55 system-ui, sans-serif;
+    margin: 0;
+    padding: clamp(18px, 5vw, 52px) 16px;
+    color: var(--ink);
+    background: #f0eeea;
+    font: 1rem/1.6 system-ui, sans-serif;
+  }
+  .card {
+    max-width: 760px;
+    margin-inline: auto;
+    padding: clamp(19px, 4.4vw, 44px);
+    border: 1px solid var(--line);
+    border-top: 4px solid var(--blue);
+    border-radius: 8px;
+    background: var(--paper);
   }
   h1 {
-    margin: 0 0 18px;
-    font-size: clamp(1.7rem, 5.8vw, 2.45rem);
-    line-height: 1.15;
-    letter-spacing: -.035em;
+    margin: 0 0 22px;
+    color: var(--blue);
+    font-size: clamp(1.85rem, 5vw, 2.9rem);
+    line-height: 1.12;
+    letter-spacing: -.04em;
   }
-  img { display: block; width: 100%; max-width: 400px; height: auto; }
-  p { margin: 16px 0; }
-  main { margin-top: 32px; border-top: 1px solid #d8d5ce; }
-  h2 { margin: 20px 0 8px; font-size: 1.12rem; }
+  .greeting {
+    display: grid;
+    grid-template-columns: minmax(0, .9fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(20px, 4vw, 36px);
+  }
+  img { display: block; width: 100%; height: auto; border-radius: 4px; }
+  .note p { margin: 0; }
+  .note p + p { margin-top: .8em; }
+  main { margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--line); }
+  h2 { margin: 0 0 8px; color: var(--blue); font-size: 1.2rem; }
   .stream { display: flex; flex-wrap: wrap; gap: .15em .37em; }
   .it { max-width: 100%; overflow-wrap: anywhere; }
-  .cm { color: #666; }
+  .cm { color: #686d77; }
   button {
     margin-top: 18px;
-    padding: 7px 12px;
-    border: 1px solid #aaa;
-    border-radius: 4px;
-    background: #fff;
-    color: inherit;
+    min-height: 44px;
+    padding: 7px 13px;
+    border: 1px solid #bcc7dc;
+    border-radius: 5px;
+    background: #edf1f7;
+    color: var(--blue);
     font: inherit;
     cursor: pointer;
   }
-  button:hover { background: #eee; }
+  button:hover { background: #dfe7f3; }
+  :focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+  @media (max-width: 550px) {
+    .greeting { grid-template-columns: minmax(0, 1fr); }
+    .greeting img { max-width: 360px; }
+  }
 </style>
 </head>
 <body>
+<div class="card">
 <header>
   <h1>Александр, с днём рождения!</h1>
-  <img src="alexander-photo.png" width="640" height="640" alt="Александр во дворе, фото со вспышкой">
-  <p>Эту фотку я всё-таки поставил :)</p>
-  <p>Желаю, чтобы всё, что ты задумал, получилось. И чтобы почаще удавалось собраться со своими.</p>
+  <div class="greeting">
+    <img src="alexander-photo.png" width="640" height="640" alt="Александр во дворе, фото со вспышкой">
+    <div class="note">
+      <p>Эту фотку я всё-таки поставил :)</p>
+      <p>Желаю, чтобы всё, что ты задумал, получилось. И чтобы почаще удавалось собраться со своими.</p>
+    </div>
+  </div>
 </header>
 <main>
   <h2>Ну и ещё желаю</h2>
@@ -57,6 +91,7 @@
   <button id="more" type="button" hidden>Ещё пожеланий</button>
   <div id="sentinel"></div>
 </main>
+</div>
 <script>
 
 class DCLogic { constructor(){ this.props = {}; } setState(s){ Object.assign(this.state, s); paint(); } }

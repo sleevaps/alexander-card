@@ -17,6 +17,7 @@ const pathStart = -5.75;
 const unitsPerScreen = 7.65;
 const walkStart = .30;
 const standDeckHeight = .122;
+const scrollSmoothingMs = 115;
 
 async function start() {
   if (!window.WebGL2RenderingContext) return;
@@ -54,6 +55,8 @@ async function start() {
   let optedIn = false;
   const motionEnabled = () => optedIn || !preference.matches;
   let lastProgress = -1;
+  let visualProgress = null;
+  let previousFrame = 0;
   let scrollOrigin = 0;
   let screens = 4.5;
   let entered = performance.now();
@@ -62,7 +65,16 @@ async function start() {
     const viewport = Math.max(1, stage.offsetHeight);
     const offset = Math.max(0, -journey.getBoundingClientRect().top);
     const localScreens = offset / viewport;
-    const progress = motionEnabled() ? (scrollOrigin + localScreens) / 2.45 : 0;
+    const targetProgress = motionEnabled() ? (scrollOrigin + localScreens) / 2.45 : 0;
+    const frameInterval = MathUtils.clamp(now - previousFrame, 0, 50);
+    previousFrame = now;
+    if (visualProgress === null || Math.abs(targetProgress - visualProgress) < .00015) {
+      visualProgress = targetProgress;
+    } else {
+      const catchUp = 1 - Math.exp(-frameInterval / scrollSmoothingMs);
+      visualProgress = lerp(visualProgress, targetProgress, catchUp);
+    }
+    const progress = visualProgress;
     const elapsed = motionEnabled() ? (now - entered) / 1000 : 0;
     const unfold = between(progress, .045, walkStart);
     const distance = Math.max(0, progress - walkStart) * 2.45 * unitsPerScreen;
@@ -165,6 +177,7 @@ async function start() {
   function setMode() {
     journey.dataset.scene = motionEnabled() ? 'moving' : 'still';
     entered = performance.now();
+    visualProgress = null;
     resize();
     sync();
   }
@@ -185,6 +198,7 @@ async function start() {
     history.replaceState(history.state, '', '#top');
     scrollOrigin = 0;
     window.scrollTo({ top: 0, behavior: 'instant' });
+    visualProgress = 0;
     screens = 4.5;
     journey.style.removeProperty('--journey-height');
     opening.inert = false;

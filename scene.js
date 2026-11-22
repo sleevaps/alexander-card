@@ -50,14 +50,16 @@ async function start() {
   let near = true;
   let frame = 0;
   let contextLost = false;
+  let optedIn = false;
+  const motionEnabled = () => optedIn || !preference.matches;
   let lastProgress = -1;
   let lastChapter = '';
   let entered = performance.now();
 
   function draw(now) {
     const travel = Math.max(1, journey.offsetHeight - stage.offsetHeight);
-    const progress = preference.matches ? 0 : MathUtils.clamp(-journey.getBoundingClientRect().top / travel, 0, 1);
-    const elapsed = preference.matches ? 0 : (now - entered) / 1000;
+    const progress = !motionEnabled() ? 0 : MathUtils.clamp(-journey.getBoundingClientRect().top / travel, 0, 1);
+    const elapsed = !motionEnabled() ? 0 : (now - entered) / 1000;
     const unfold = between(progress, .045, .30);
     const walk = MathUtils.clamp((progress - .245) / .68, 0, 1);
     const amount = between(walk, 0, .09) * (1 - between(walk, .90, 1));
@@ -127,7 +129,7 @@ async function start() {
   }
 
   function sync() {
-    if (!near || document.hidden || contextLost || preference.matches) {
+    if (!near || document.hidden || contextLost || !motionEnabled()) {
       if (frame) cancelAnimationFrame(frame);
       frame = 0;
       return;
@@ -148,7 +150,7 @@ async function start() {
   }
 
   function setMode() {
-    journey.dataset.scene = preference.matches ? 'still' : 'moving';
+    journey.dataset.scene = motionEnabled() ? 'moving' : 'still';
     entered = performance.now();
     resize();
     sync();
@@ -160,7 +162,15 @@ async function start() {
     sync();
   }).observe(stage);
   document.addEventListener('visibilitychange', sync);
-  preference.addEventListener('change', setMode);
+  opening.querySelector('.follow').addEventListener('click', () => {
+    if (motionEnabled() || contextLost) return;
+    optedIn = true;
+    setMode();
+  });
+  preference.addEventListener('change', () => {
+    optedIn = false;
+    setMode();
+  });
   renderer.domElement.addEventListener('webglcontextlost', () => {
     contextLost = true;
     delete journey.dataset.scene;

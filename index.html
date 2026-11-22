@@ -4,350 +4,60 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Александр, с днём рождения!</title>
-<meta name="description" content="Открытка для Александра.">
+<meta name="description" content="Два кадра и поздравление для Александра.">
 <meta property="og:title" content="Александр, с днём рождения!">
 <meta property="og:image" content="https://sleevaps.github.io/alexander-card/alexander-photo.png">
-<meta name="theme-color" content="#161714">
+<meta name="theme-color" content="#1b1714">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;800&family=Unbounded:wght@500;700&display=swap">
-<style>
-  :root {
-    color-scheme: dark;
-    --ink: #f5f4e8;
-    --muted: #d0d1bf;
-    --accent: #deeb9a;
-    --background: #161714;
-    --line: #414438;
-    --display: Unbounded, system-ui, sans-serif;
-    --body: Manrope, system-ui, sans-serif;
-  }
-  * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  body {
-    margin: 0;
-    background: var(--background);
-    color: var(--ink);
-    font: 500 1rem/1.65 var(--body);
-  }
-  h1, h2, p, figure { margin: 0; }
-  .frame { width: min(1180px, calc(100% - 2 * clamp(20px, 6vw, 72px))); margin-inline: auto; }
-  .cover {
-    overflow: clip;
-    background:
-      radial-gradient(ellipse at 83% 49%, #3d442e, transparent 55%),
-      var(--background);
-  }
-  .stage {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, .92fr);
-    align-items: center;
-    min-height: min(770px, 94svh);
-    padding-block: clamp(62px, 11svh, 132px);
-    perspective: 1050px;
-    transform-style: preserve-3d;
-  }
-  .copy { position: relative; z-index: 1; }
-  .copy-inner { animation: copy-in .75s .12s both cubic-bezier(.22, 1, .36, 1); }
-  h1 {
-    font: 700 clamp(2.2rem, 5.25vw, 5rem)/1.08 var(--display);
-    letter-spacing: -.073em;
-  }
-  .name { display: block; color: var(--accent); margin-bottom: .12em; }
-  .note { margin-block: 1.4rem 1.75rem; max-width: 34ch; color: var(--muted); font-size: clamp(1rem, 1.55vw, 1.2rem); }
-  .action {
-    display: inline-flex;
-    align-items: center;
-    gap: .65em;
-    min-height: 46px;
-    padding: 9px 15px;
-    border: 1px solid currentColor;
-    border-radius: 4px;
-    background: transparent;
-    color: var(--accent);
-    font: 800 .95rem/1.25 var(--body);
-    text-decoration: none;
-    cursor: pointer;
-    transition: color .2s, background-color .2s, transform .2s;
-  }
-  .action:hover { color: var(--background); background: var(--accent); }
-  .action:active { transform: translateY(2px); }
-  :focus-visible { outline: 2px solid var(--ink); outline-offset: 6px; }
-
-  .art { position: relative; isolation: isolate; perspective: 900px; }
-  .orbit {
-    position: absolute;
-    z-index: -1;
-    inset: -15% -9%;
-    border: 1px solid #deeb9a4a;
-    border-radius: 50%;
-    transform: rotate(-37deg) scaleY(.48);
-  }
-  .orbit::after {
-    position: absolute;
-    inset: -15%;
-    border: 1px solid #deeb9a27;
-    border-radius: inherit;
-    content: "";
-  }
-  .photo-group {
-    position: relative;
-    width: min(100%, 465px);
-    margin-inline: auto;
-    transform-style: preserve-3d;
-    transform: rotateX(var(--pitch, 4deg)) rotateY(var(--yaw, -8deg)) rotateZ(5deg);
-    transition: transform .38s cubic-bezier(.2, .7, .25, 1);
-  }
-  .photo-group::before {
-    position: absolute;
-    inset: 1% -5% -6% 5%;
-    border: 1px solid #deeb9a68;
-    background: #adb98118;
-    transform: translateZ(-32px) rotate(-9deg);
-    content: "";
-  }
-  .photo {
-    padding: 8px;
-    border: 1px solid #e2e5ce4f;
-    background: #292d24;
-    box-shadow: 0 28px 64px #0c0f09ad;
-    animation: photo-in 1.05s both cubic-bezier(.2, .8, .25, 1);
-  }
-  .photo img { display: block; width: 100%; height: auto; }
-
-  .wishes { border-top: 1px solid var(--line); padding-block: clamp(36px, 7vw, 90px); }
-  .wishes h2 { margin-bottom: 1.1em; font: 500 clamp(1.25rem, 3vw, 2.25rem)/1.25 var(--display); letter-spacing: -.045em; }
-  .stream { display: flex; flex-wrap: wrap; align-items: baseline; gap: .15em .45em; font-size: clamp(1.05rem, 2vw, 1.75rem); }
-  .it { max-width: 100%; overflow-wrap: anywhere; }
-  .wb, .wf { color: var(--accent); }
-  .wd, .we { font-weight: 800; }
-  .cm { color: #a3a897; }
-  .more { margin-top: 26px; }
-  .more[hidden] { display: none; }
-
-  @keyframes copy-in {
-    from { opacity: 0; transform: translateY(22px); }
-  }
-  @keyframes photo-in {
-    from { opacity: 0; transform: translate3d(0, 42px, -100px) rotateY(20deg) scale(.9); }
-  }
-  @media (max-width: 740px) {
-    .stage { grid-template-columns: minmax(0, 1fr); min-height: 0; gap: 44px; padding-block: 44px 62px; }
-    h1 { font-size: clamp(1.9rem, 7.8vw, 3.7rem); }
-    .art { grid-row: 1; width: min(80%, 360px); justify-self: center; }
-    .photo-group { transform: rotateZ(4deg); }
-    .note { margin-block: 1rem 1.25rem; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    html { scroll-behavior: auto; }
-    .copy-inner, .photo, .photo-group, .action { animation: none; transition: none; }
-    .photo-group, .action:active { transform: none; }
-  }
-</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header class="cover">
-  <div class="frame stage">
-    <div class="copy">
-      <div class="copy-inner">
-        <h1><span class="name">Александр,</span> с днём<br>рождения!</h1>
-        <p class="note">Желаю, чтобы всё, что ты задумал, получилось. И чтобы почаще удавалось собраться со своими.</p>
-        <a class="action" href="#wishes">К пожеланиям <span aria-hidden="true">↓</span></a>
+<header class="opening" id="top">
+  <div class="opening-inner">
+    <div class="intro">
+      <h1><span>С днём<br> рождения,</span><strong>Александр!</strong></h1>
+      <p>Сань, я нашёл два кадра, которые сложно поставить рядом. Поэтому поставил их спинами друг к другу.</p>
+      <div class="controls">
+        <button class="shutter" id="shutter" type="button" aria-pressed="false" aria-controls="snapshot" hidden>
+          <span class="shutter-icon" aria-hidden="true"></span>
+          Щёлкнуть затвором
+        </button>
+        <a class="text-link" href="#wishes">К поздравлению <span aria-hidden="true">↘</span></a>
       </div>
     </div>
-    <div class="art">
-      <div class="orbit" aria-hidden="true"></div>
-      <div class="photo-group">
-        <figure class="photo">
-          <img src="alexander-photo.png" width="640" height="640" alt="Александр во дворе, фото со вспышкой" fetchpriority="high">
-        </figure>
-      </div>
-    </div>
+
+    <figure class="scene" id="scene">
+      <div class="viewfinder" aria-hidden="true"></div>
+      <div class="render" aria-hidden="true"></div>
+      <img class="snapshot" id="snapshot" src="alexander-photo.png" width="640" height="640" alt="Александр во дворе, кадр со вспышкой" fetchpriority="high">
+      <div class="exposure" aria-hidden="true"></div>
+      <figcaption id="frame-label" aria-live="polite"><span aria-hidden="true">✦</span> Кадр со вспышкой</figcaption>
+    </figure>
   </div>
 </header>
-<main class="wishes" id="wishes">
-  <div class="frame">
-    <h2>Ну и ещё желаю</h2>
+
+<main id="wishes">
+  <section class="letter" aria-labelledby="letter-title">
+    <div class="contact">
+      <img src="alexander-night.png" width="640" height="640" alt="Ночной портрет Александра в зелёном свете" loading="lazy">
+    </div>
+    <div class="letter-copy">
+      <h2 id="letter-title">А если серьёзно.</h2>
+      <p>Сань, с днём рождения! Желаю, чтобы на свои дела хватало сил, на близких — времени, а на спонтанные планы всегда находилось «да, погнали».</p>
+    </div>
+  </section>
+  <section class="wishes" aria-labelledby="wishes-title">
+    <h2 id="wishes-title">Ну и раз пошло такое…</h2>
     <div id="stream" class="stream">
       <span id="dots" aria-hidden="true">…</span>
-      <noscript>Здоровья, удачи и побольше поводов для радости!</noscript>
+      <noscript>Здоровья, удачи и побольше вечеров, которые есть зачем вспоминать!</noscript>
     </div>
-    <button class="action more" id="more" type="button" hidden>Ещё пожеланий <span aria-hidden="true">+</span></button>
+    <button class="text-link more" id="more" type="button" hidden>Ещё пожеланий <span aria-hidden="true">＋</span></button>
     <div id="sentinel"></div>
-  </div>
+  </section>
 </main>
-<script>
-  const stage = document.querySelector('.stage');
-  const photoGroup = document.querySelector('.photo-group');
-  const tiltEnabled = matchMedia('(min-width: 741px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)');
-  let stageRect = null;
-
-  stage.addEventListener('pointermove', event => {
-    if (!tiltEnabled.matches || event.pointerType === 'touch') return;
-    stageRect ??= stage.getBoundingClientRect();
-    const x = (event.clientX - stageRect.left) / stageRect.width - .5;
-    const y = (event.clientY - stageRect.top) / stageRect.height - .5;
-    photoGroup.style.setProperty('--pitch', (4 - y * 20) + 'deg');
-    photoGroup.style.setProperty('--yaw', (-8 + x * 28) + 'deg');
-  });
-
-  function resetTilt() {
-    stageRect = null;
-    photoGroup.style.removeProperty('--pitch');
-    photoGroup.style.removeProperty('--yaw');
-  }
-
-  stage.addEventListener('pointerleave', resetTilt);
-  window.addEventListener('scroll', resetTilt, { passive: true });
-  window.addEventListener('resize', resetTilt);
-  tiltEnabled.addEventListener('change', resetTilt);
-</script>
-<script>
-
-class DCLogic { constructor(){ this.props = {}; } setState(s){ Object.assign(this.state, s); paint(); } }
-
-class Component extends DCLogic {
-  state = { count: 64 };
-  words = [];
-  recent = [];
-  seed = 20261122;
-  lastAdd = 0;
-
-  base = ['счастья','здоровья','радости','любви','удачи','тепла','света','добра','мира','гармонии','вдохновения','процветания','благополучия','нежности','веселья','смеха','улыбок','энергии','сил','бодрости','уверенности','спокойствия','достатка','изобилия','красоты','молодости','свежести','лёгкости','яркости','насыщенности','приключений','открытий'];
-
-  nouns = [
-    ['счастья','n'],['здоровья','n'],['радости','f'],['любви','f'],['удачи','f'],['тепла','n'],['света','m'],['добра','n'],['мира','m'],['гармонии','f'],['вдохновения','n'],['процветания','n'],['благополучия','n'],['нежности','f'],['веселья','n'],['смеха','m'],['улыбок','p'],['энергии','f'],['сил','p'],['бодрости','f'],['уверенности','f'],['спокойствия','n'],['достатка','m'],['изобилия','n'],['красоты','f'],['молодости','f'],['свежести','f'],['лёгкости','f'],['яркости','f'],['насыщенности','f'],['приключений','p'],['открытий','p'],
-    ['побед','p'],['успехов','p'],['верных друзей','x'],['путешествий','p'],['впечатлений','p'],['терпения','n'],['мудрости','f'],['свободы','f'],['драйва','m'],['азарта','m'],['сюрпризов','p'],['чудес','p'],['восторга','m'],['уюта','m'],['отдыха','m'],['позитива','m'],['оптимизма','m'],['юмора','m'],['смелости','f'],['решимости','f'],['стойкости','f'],['доброты','f'],['взаимопонимания','n'],['поддержки','f'],['заботы','f'],['внимания','n'],['признания','n'],['везения','n'],['солнечных дней','x'],['весны','f'],['музыки','f'],['праздников','p'],['подарков','p'],['объятий','p'],['встреч','p'],['полёта','m'],['достижений','p'],['рекордов','p'],['мотивации','f'],['баланса','m'],['понимания','n'],['искренности','f'],['страсти','f'],['огня','m'],['роста','m'],['развития','n'],['знаний','p'],['мастерства','n'],['таланта','m'],['идей','p'],['свершений','p'],['возможностей','p'],['перспектив','p'],['шансов','p'],['удовольствия','n'],['наслаждения','n'],['блаженства','n'],['зелёных светофоров','x'],['быстрого интернета','x'],['вкусной еды','x'],['хорошей погоды','x'],['звёзд с неба','x'],['спокойных ночей','x'],['новых горизонтов','x'],['исполнения желаний','x'],['чистого неба','x'],['лёгкого пути','x'],['крепкого сна','x'],['денег','p'],['тишины','f'],['сил на всё задуманное','x'],['мурашек от счастья','x'],['родных рядом','x'],['вкуса к жизни','x']
-  ];
-
-  adj = [
-    ['огромного','огромной','огромных'],['бесконечного','бесконечной','бесконечных'],['настоящего','настоящей','настоящих'],['безграничного','безграничной','безграничных'],['яркого','яркой','ярких'],['тёплого','тёплой','тёплых'],['искреннего','искренней','искренних'],['невероятного','невероятной','невероятных'],['космического','космической','космических'],['щедрого','щедрой','щедрых'],['нескончаемого','нескончаемой','нескончаемых'],['волшебного','волшебной','волшебных'],['вечного','вечной','вечных'],['большого','большой','больших'],['неземного','неземной','неземных'],['сумасшедшего','сумасшедшей','сумасшедших'],['оглушительного','оглушительной','оглушительных']
-  ];
-
-  cls = ['wa','wc','wb','we','wd','wf','wc','wa','we','wb','wc','wf'];
-
-  extra = [
-    ['энтузиазма','m'],['покоя','m'],['порядка','m'],['комфорта','m'],['кайфа','m'],['успеха','m'],['прогресса','m'],['прорыва','m'],['триумфа','m'],['фарта','m'],['задора','m'],['куража','m'],['адреналина','m'],['смысла','m'],['уважения','n'],['дохода','m'],['отпуска','m'],['загара','m'],['рассвета','m'],['заката','m'],['огонька','m'],['интереса','m'],['настроя','m'],['трепета','m'],['шарма','m'],['стиля','m'],['вкуса','m'],['аромата','m'],['праздника','m'],['салюта','m'],['фейерверка','m'],['карнавала','m'],['уюта в доме','x'],
-    ['обожания','n'],['очарования','n'],['доверия','n'],['единения','n'],['согласия','n'],['лета','n'],['солнца','n'],['моря','n'],['богатства','n'],['изящества','n'],['мужества','n'],['упорства','n'],['усердия','n'],['бесстрашия','n'],['озорства','n'],['остроумия','n'],['жизнелюбия','n'],['долголетия','n'],['великодушия','n'],['благородства','n'],['дружелюбия','n'],['радушия','n'],['умиротворения','n'],['равновесия','n'],['совершенства','n'],['торжества','n'],['ликования','n'],['изумления','n'],['творчества','n'],['чутья','n'],['предвкушения','n'],['волшебства','n'],['озарения','n'],['обаяния','n'],['вдохновения на подвиги','x'],
-    ['дерзости','f'],['отваги','f'],['воли','f'],['мечты','f'],['фантазии','f'],['романтики','f'],['ласки','f'],['преданности','f'],['верности','f'],['щедрости','f'],['честности','f'],['открытости','f'],['гибкости','f'],['выносливости','f'],['ловкости','f'],['сноровки','f'],['смекалки','f'],['интуиции','f'],['харизмы','f'],['грации','f'],['элегантности','f'],['беззаботности','f'],['безмятежности','f'],['природы','f'],['прохлады','f'],['прибыли','f'],['зарплаты','f'],['стабильности','f'],['надёжности','f'],['безопасности','f'],['востребованности','f'],['самореализации','f'],['независимости','f'],['целеустремлённости','f'],['энергичности','f'],['активности','f'],['жизнерадостности','f'],['игривости','f'],['сердечности','f'],['теплоты','f'],['душевности','f'],['любознательности','f'],['силы','f'],['мощи','f'],['славы','f'],['известности','f'],['популярности','f'],['поэзии','f'],['ясности','f'],['искры','f'],['весёлой суеты','x'],
-    ['мечтаний','p'],['желаний','p'],['планов','p'],['проектов','p'],['наград','p'],['медалей','p'],['кубков','p'],['трофеев','p'],['высот','p'],['вершин','p'],['озарений','p'],['мгновений','p'],['моментов','p'],['вечеров','p'],['рассветов','p'],['закатов','p'],['каникул','p'],['выходных','p'],['поездок','p'],['дорог','p'],['историй','p'],['воспоминаний','p'],['фотографий','p'],['комплиментов','p'],['единомышленников','p'],['союзников','p'],['звёзд','p'],['огней','p'],['искр','p'],['смешинок','p'],['шуток','p'],['торжеств','p'],['пикников','p'],['концертов','p'],['фестивалей','p'],['вечеринок','p'],['танцев','p'],['песен','p'],['книг','p'],['фильмов','p'],['игр','p'],['лайков','p'],['бонусов','p'],['премий','p'],['миллионов','p'],['сокровищ','p'],['находок','p'],['совпадений','p'],['тортов','p'],['конфет','p'],['пирогов','p'],['вкусняшек','p'],['обнимашек','p'],['знакомств','p'],['удивлений','p'],['маленьких радостей','x'],
-    ['ветра в паруса','x'],['силы духа','x'],['здравого смысла','x'],['бабочек в животе','x'],['знаков судьбы','x'],['кофе по утрам','x'],['тёплого пледа','x'],['уютных вечеров','x'],['долгих прогулок','x'],['верных решений','x'],['добрых новостей','x'],['лёгких понедельников','x'],['длинных выходных','x'],['отличного настроения','x'],['смелых идей','x'],['великих дел','x'],['крутых поворотов','x'],['места под солнцем','x'],['попутного ветра','x'],['ясных целей','x'],['интересных людей вокруг','x'],['тёплых слов','x'],['настоящих чувств','x'],['любимого дела','x'],['дел по душе','x'],['счастливых случайностей','x'],['звёздного неба','x'],['морского бриза','x'],['шума волн','x'],['горячего чая','x'],['тёплого солнца','x'],['бесконечного лета','x'],['безоблачного неба','x'],['сбывшихся планов','x'],['исполненных обещаний','x'],['мира во всём мире','x'],['вкусных завтраков','x'],['ярких снов','x'],['широкой улыбки','x'],['лёгкой руки','x'],['светлой головы','x'],['горящих глаз','x'],['доброго сердца','x'],['крепкого плеча рядом','x'],['повода для гордости','x'],['побед над собой','x'],['второго дыхания','x'],['полной зарядки','x'],['хорошей музыки в наушниках','x'],['свободных вечеров','x'],['запаха весны','x'],['первого снега','x'],['тёплого лета','x'],['чудесных мгновений','x']
-  ];
-
-  adj2 = [
-    ['безмерного','безмерной','безмерных'],['лучезарного','лучезарной','лучезарных'],['головокружительного','головокружительной','головокружительных'],['бескрайнего','бескрайней','бескрайних'],['неиссякаемого','неиссякаемой','неиссякаемых'],['абсолютного','абсолютной','абсолютных'],['чистого','чистой','чистых'],['незабываемого','незабываемой','незабываемых'],['потрясающего','потрясающей','потрясающих'],['фантастического','фантастической','фантастических'],['сказочного','сказочной','сказочных'],['искрящегося','искрящейся','искрящихся'],['солнечного','солнечной','солнечных'],['отборного','отборной','отборных'],['неудержимого','неудержимой','неудержимых'],['запредельного','запредельной','запредельных'],['легендарного','легендарной','легендарных'],['ежедневного','ежедневной','ежедневных'],['вселенского','вселенской','вселенских'],['море','море','море']
-  ];
-
-  draw(key, pool) {
-    if (!this[key] || !this[key].length) {
-      let arr = pool.slice();
-      if (!this[key + 'Init']) {
-        this[key + 'Init'] = true;
-        if (key === 'nDeck') arr = arr.filter((p) => this.base.indexOf(p[0]) === -1);
-      }
-      for (let k = arr.length - 1; k > 0; k--) {
-        const j = Math.floor(this.rand() * (k + 1));
-        const t = arr[k]; arr[k] = arr[j]; arr[j] = t;
-      }
-      this[key] = arr;
-    }
-    return this[key].pop();
-  }
-
-  rand() {
-    this.seed = (this.seed * 1664525 + 1013904223) % 4294967296;
-    return this.seed / 4294967296;
-  }
-
-  nextWord(i) {
-    if (i < this.base.length) return this.base[i];
-    this.allN = this.allN || this.nouns.concat(this.extra);
-    this.allA = this.allA || this.adj.concat(this.adj2.filter((a) => a[0] !== 'море'));
-    const pick = this.draw('nDeck', this.allN);
-    if (pick[1] !== 'x' && this.rand() < 0.35) {
-      const a = this.draw('aDeck', this.allA);
-      const form = pick[1] === 'f' ? a[1] : pick[1] === 'p' ? a[2] : a[0];
-      return form + ' ' + pick[0];
-    }
-    return pick[0];
-  }
-
-  ensure(n) {
-    while (this.words.length < n) {
-      const i = this.words.length;
-      const r = this.rand();
-      const c = this.cls[(i * 5 + Math.floor(r * 4)) % this.cls.length];
-      this.words.push({ text: this.nextWord(i), cls: 'it ' + c });
-    }
-  }
-
-  setSentinel = (el) => { this.sentinel = el; };
-
-  add = (n) => {
-    const now = Date.now();
-    if (now - this.lastAdd < 120) return;
-    this.lastAdd = now;
-    this.setState({ count: this.state.count + (n || 40) });
-  };
-
-  more = () => { this.add(60); };
-
-  check = () => {
-    if (!this.sentinel) return;
-    const r = this.sentinel.getBoundingClientRect();
-    const vh = window.innerHeight || 800;
-    if (r.top < vh * 2.2) this.add(40);
-  };
-
-  componentDidMount() {
-    window.addEventListener('scroll', this.check, true);
-    window.addEventListener('wheel', this.check, { passive: true });
-    window.addEventListener('touchmove', this.check, { passive: true });
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('scroll', this.check, true);
-    window.removeEventListener('wheel', this.check);
-    window.removeEventListener('touchmove', this.check);
-  }
-
-  renderVals() {
-    this.ensure(this.state.count);
-    return {
-      words: this.words.slice(0, this.state.count),
-      setSentinel: this.setSentinel,
-      more: this.more
-    };
-  }
-}
-
-const comp = new Component();
-const stream = document.getElementById('stream');
-const dots = document.getElementById('dots');
-let shown = 0;
-function paint() {
-  const v = comp.renderVals();
-  const frag = document.createDocumentFragment();
-  for (; shown < v.words.length; shown++) {
-    const w = v.words[shown];
-    const s = document.createElement('span');
-    s.className = w.cls;
-    s.textContent = w.text;
-    const c = document.createElement('span');
-    c.className = 'cm';
-    c.textContent = ',';
-    s.appendChild(c);
-    frag.appendChild(s);
-  }
-  stream.insertBefore(frag, dots);
-}
-comp.setSentinel(document.getElementById('sentinel'));
-const moreButton = document.getElementById('more');
-moreButton.addEventListener('click', () => comp.more());
-moreButton.hidden = false;
-paint();
-comp.componentDidMount();
-
-</script>
+<script type="module" src="scene.bundle.js"></script>
 </body>
 </html>

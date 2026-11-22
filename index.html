@@ -3,141 +3,137 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>С днём рождения, Александр!</title>
+<title>Александр, с днём рождения!</title>
 <meta name="description" content="Открытка для Александра с бесконечной лентой пожеланий.">
-<meta property="og:title" content="С днём рождения, Александр!">
-<meta property="og:description" content="Листай вниз — пожелания не заканчиваются.">
+<meta property="og:title" content="Александр, с днём рождения!">
+<meta property="og:description" content="Пусть впереди будет много хорошего.">
 <meta property="og:type" content="website">
-<meta name="theme-color" content="#17132b">
+<meta property="og:image" content="https://sleevaps.github.io/alexander-card/flash-poster.webp">
+<meta name="theme-color" content="#f5eddb">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&family=Playfair+Display:ital,wght@0,700;1,600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap">
 <style>
   :root {
-    color-scheme: dark;
-    --night: #17132b;
-    --cream: #fff5e8;
-    --gold: #ffd084;
-    --lilac: #d5c3ff;
-    --muted: #cfc5e2;
+    --paper: #f5eddb;
+    --ink: #143b35;
+    --soft-ink: #3f564b;
+    --red: #a92f1d;
+    --rule: #c8c3aa;
     --serif: "Playfair Display", Georgia, serif;
     --sans: Manrope, system-ui, sans-serif;
   }
+
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
-  body {
-    margin: 0;
-    color: var(--cream);
-    background: var(--night);
-    font-family: var(--sans);
-  }
-  .hero {
-    background: radial-gradient(ellipse at 86% 38%, #4d306a, transparent 58%),
-                linear-gradient(145deg, #211833, var(--night) 78%);
-    border-bottom: 1px solid #d5c3ff33;
-  }
-  .frame, main { width: min(1100px, calc(100% - 2 * clamp(20px, 5vw, 64px))); margin-inline: auto; }
+  body { margin: 0; color: var(--ink); background: var(--paper); font-family: var(--sans); }
+  .frame { width: min(1320px, calc(100% - 2 * clamp(20px, 5vw, 76px))); margin-inline: auto; }
+  :focus-visible { outline: 2px solid currentColor; outline-offset: 5px; }
+
   .masthead {
-    padding-block: 24px;
-    border-bottom: 1px solid #d5c3ff44;
-    color: var(--gold);
-    font-size: .75rem;
+    display: flex;
+    align-items: center;
+    gap: .65em;
+    padding-block: 20px;
+    border-bottom: 1px solid var(--rule);
+    font-size: .76rem;
     font-weight: 800;
-    letter-spacing: .2em;
+    letter-spacing: .13em;
     text-transform: uppercase;
   }
+  .masthead span { color: var(--red); font-size: 1.25rem; line-height: 1; }
   .cover {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(160px, .52fr);
+    grid-template-columns: minmax(0, .95fr) minmax(0, 1.2fr);
     align-items: center;
-    gap: clamp(24px, 5vw, 72px);
-    padding-block: clamp(52px, 9vw, 116px);
+    gap: clamp(26px, 4vw, 64px);
+    padding-block: clamp(28px, 4.75vw, 72px);
   }
-  .greeting { min-width: 0; }
+  h1, h2, p, figure { margin: 0; }
   h1 {
-    margin: 0;
-    font: 700 clamp(2rem, 7.6vw, 6.1rem)/1.04 var(--serif);
-    letter-spacing: -.045em;
+    font: 600 clamp(2.6rem, 5.65vw, 5.65rem)/1.02 var(--serif);
+    letter-spacing: -.065em;
   }
-  h1 em { display: block; color: var(--gold); font-weight: 600; }
-  .intro { max-width: 33rem; margin: 26px 0; color: var(--muted); font-size: clamp(1rem, 1.6vw, 1.2rem); line-height: 1.65; }
-  .jump, .more {
+  h1 em { display: block; color: var(--red); font-weight: 600; }
+  .intro {
+    max-width: 29rem;
+    margin-block: clamp(16px, 2.2vw, 28px) clamp(20px, 3vw, 36px);
+    color: var(--soft-ink);
+    font-size: clamp(.98rem, 1.4vw, 1.14rem);
+    line-height: 1.65;
+  }
+  .action {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: .85em;
     min-height: 48px;
-    padding: 10px 22px;
-    border: 1px solid var(--gold);
-    border-radius: 999px;
-    color: var(--gold);
-    background: transparent;
+    padding: 10px 20px;
+    border: 1px solid var(--ink);
+    color: var(--paper);
+    background: var(--ink);
     font: 800 .9rem/1.4 var(--sans);
     text-decoration: none;
     cursor: pointer;
   }
-  .jump:hover, .more:hover { color: var(--night); background: var(--gold); }
-  :focus-visible { outline: 2px solid var(--cream); outline-offset: 5px; }
-  .seal {
-    position: relative;
-    isolation: isolate;
+  .action:hover { color: var(--ink); background: var(--paper); }
+  .art { background: var(--ink); box-shadow: 8px 8px 0 #143b3521; }
+  .art img { display: block; width: 100%; height: auto; }
+
+  .message {
     display: grid;
-    width: min(100%, 290px);
-    aspect-ratio: 1;
-    place-self: center;
-    place-items: center;
-    border: 1px solid #ffd08466;
-    border-radius: 50%;
-    background: radial-gradient(circle, #90679d6b, #372444 68%);
-    box-shadow: 0 0 75px #d5a1ff25;
+    grid-template-columns: minmax(0, .82fr) minmax(0, 1.2fr);
+    align-items: start;
+    gap: clamp(16px, 5vw, 70px);
+    padding-block: clamp(28px, 5vw, 68px);
+    border-top: 1px solid var(--rule);
   }
-  .seal::before, .seal::after {
-    position: absolute;
-    inset: 7%;
-    border: 1px solid #ffd08450;
-    border-radius: 50%;
-    content: "";
+  .message h2, .wishes h2 {
+    font: 600 clamp(2rem, 4vw, 4.15rem)/1.05 var(--serif);
+    letter-spacing: -.05em;
   }
-  .seal::after { inset: -7%; border-color: #d5c3ff33; }
-  .initial { color: var(--gold); font: italic 600 clamp(4rem, 12vw, 10rem)/1 var(--serif); transform: translateX(-.05em); }
-  .star { position: absolute; color: var(--gold); line-height: 1; }
-  .star-one { top: 6%; right: 8%; font-size: clamp(1rem, 3vw, 2.5rem); }
-  .star-two { bottom: 11%; left: 8%; font-size: clamp(.8rem, 2vw, 1.6rem); }
-  main { padding-block: clamp(44px, 7vw, 90px) 130px; }
-  h2 { margin: 0 0 24px; font: 600 italic clamp(1.6rem, 4vw, 2.7rem)/1.2 var(--serif); color: var(--gold); }
-  .stream { display: flex; flex-wrap: wrap; align-items: baseline; gap: .25em .5em; font-size: clamp(1.12rem, 2.7vw, 2.1rem); line-height: 1.4; }
-  .it { max-width: 100%; overflow-wrap: anywhere; animation: rise .55s ease both; }
-  .cm { color: var(--muted); font: 400 .65em var(--sans); }
-  .wa { font: italic 600 1.2em var(--serif); }
-  .wb { color: var(--gold); font-size: .83em; font-weight: 800; text-transform: uppercase; }
-  .wc { color: var(--muted); font-size: .82em; }
-  .wd { color: var(--lilac); font: 700 1.36em var(--serif); }
-  .we { font-size: .94em; font-weight: 800; }
-  .wf { color: var(--gold); font: italic 600 1em var(--serif); }
-  .dots { color: var(--gold); }
-  .more-wrap { display: flex; justify-content: center; margin-top: 36px; }
-  .badge {
-    position: fixed;
-    z-index: 1;
-    bottom: max(14px, env(safe-area-inset-bottom));
-    left: 50%;
-    transform: translateX(-50%);
-    white-space: nowrap;
-    padding: 9px 20px;
-    border: 1px solid #d5c3ff55;
-    border-radius: 999px;
-    color: var(--cream);
-    background: #241b39;
-    box-shadow: 0 8px 32px #0b071f90;
-    font-size: .88rem;
+  .message p { max-width: 35rem; padding-top: .3em; font-size: clamp(1rem, 1.65vw, 1.25rem); line-height: 1.7; }
+
+  .wishes { padding-block: clamp(40px, 6vw, 88px) 56px; color: var(--paper); background: var(--ink); }
+  .wishes-head {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px 20px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid #e6e4b46b;
   }
-  #count { margin-right: .32em; color: var(--gold); font-size: 1.16em; font-weight: 800; font-variant-numeric: tabular-nums; }
-  @media (max-width: 680px) {
-    .cover { grid-template-columns: minmax(0, 1fr); }
-    .seal { grid-row: 1; width: clamp(98px, 24vw, 140px); justify-self: start; margin-left: 8px; }
-    h1 { font-size: clamp(2rem, 9vw, 4rem); }
+  .badge { color: #dfdfbd; font-size: .85rem; }
+  #count { font-weight: 800; color: #ffce91; font-variant-numeric: tabular-nums; }
+  .stream {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: .28em .55em;
+    padding-block: 24px;
+    font-size: clamp(1.18rem, 2.5vw, 2.05rem);
+    line-height: 1.48;
   }
-  @keyframes rise { from { opacity: 0; transform: translateY(8px); } }
+  .it { max-width: 100%; overflow-wrap: anywhere; animation: rise .45s ease both; }
+  .cm { color: #aebfa9; }
+  .wa { font: italic 600 1.15em var(--serif); }
+  .wb { color: #ffce91; font-size: .82em; font-weight: 800; text-transform: uppercase; }
+  .wc { color: #c9d6b9; font-size: .83em; }
+  .wd { color: #f5ad93; font: 600 1.26em var(--serif); }
+  .we { font-size: .9em; font-weight: 700; }
+  .wf { color: #ffce91; font: italic 600 1.03em var(--serif); }
+  .dots { color: #ffce91; }
+  .more { border-color: var(--paper); }
+  .more[hidden] { display: none; }
+  #sentinel { height: 1px; }
+
+  @media (max-width: 760px) {
+    .cover, .message { grid-template-columns: minmax(0, 1fr); }
+    h1 { font-size: clamp(2.45rem, 9.75vw, 4.8rem); }
+    .wishes-head { align-items: start; }
+  }
+  @keyframes rise { from { opacity: 0; transform: translateY(6px); } }
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     .it { animation: none; }
@@ -145,32 +141,39 @@
 </style>
 </head>
 <body>
-<header class="hero">
-  <div class="frame">
-    <div class="masthead">Открытка для Александра</div>
-    <div class="cover">
-      <div class="greeting">
-        <h1>С днём рождения, <em>Александр!</em></h1>
-        <p class="intro">Пусть впереди будет больше встреч, которых ждёшь, дел, которые зажигают, и дней, которые хочется запомнить.</p>
-        <a class="jump" href="#wishes">К пожеланиям <span aria-hidden="true">↓</span></a>
-      </div>
-      <div class="seal" aria-hidden="true">
-        <span class="initial">А</span>
-        <span class="star star-one">✦</span>
-        <span class="star star-two">✦</span>
-      </div>
+<header class="frame">
+  <div class="masthead"><span aria-hidden="true">✦</span> Открытка для Александра</div>
+  <div class="cover">
+    <div>
+      <h1><em>Александр,</em> с днём рождения!</h1>
+      <p class="intro">Пусть впереди будет много хорошего. И пусть самое интересное ещё только начинается.</p>
+      <a class="action" href="#wishes">К пожеланиям <span aria-hidden="true">↓</span></a>
     </div>
+    <figure class="art">
+      <img src="flash-poster.webp" width="1536" height="1024" fetchpriority="high" alt="Портрет Александра с яркой вспышкой на фоне ночного двора">
+    </figure>
   </div>
 </header>
-<main id="wishes">
-  <h2>Желаю тебе…</h2>
-  <div id="stream" class="stream">
-    <span id="dots" class="dots" aria-hidden="true">…</span>
-  </div>
-  <div id="sentinel"></div>
-  <div class="more-wrap"><button class="more" id="more" type="button">Ещё пожеланий</button></div>
+<main>
+  <section class="frame message">
+    <h2>За всё, что впереди</h2>
+    <p>Желаю тебе встреч, после которых хочется строить планы, дел, от которых горят глаза, и вечеров, когда можно выдохнуть и подумать: хороший был день.</p>
+  </section>
+  <section class="wishes" id="wishes">
+    <div class="frame">
+      <div class="wishes-head">
+        <h2>И ещё желаю…</h2>
+        <p class="badge">Пожеланий <span id="count">64</span></p>
+      </div>
+      <div id="stream" class="stream">
+        <span id="dots" class="dots" aria-hidden="true">…</span>
+        <noscript>Здоровья, удачи, близких рядом и побольше поводов для радости!</noscript>
+      </div>
+      <button class="action more" id="more" type="button" hidden>Ещё пожеланий <span aria-hidden="true">+</span></button>
+      <div id="sentinel"></div>
+    </div>
+  </section>
 </main>
-<div class="badge" aria-live="polite" aria-atomic="true"><span id="count">64</span> пожеланий</div>
 <script>
 
 class DCLogic { constructor(){ this.props = {}; } setState(s){ Object.assign(this.state, s); paint(); } }
@@ -314,7 +317,9 @@ function paint() {
   countEl.textContent = v.count;
 }
 comp.setSentinel(document.getElementById('sentinel'));
-document.getElementById('more').addEventListener('click', () => comp.more());
+const moreButton = document.getElementById('more');
+moreButton.addEventListener('click', () => comp.more());
+moreButton.hidden = false;
 paint();
 comp.componentDidMount();
 
